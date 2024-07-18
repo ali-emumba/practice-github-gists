@@ -12,6 +12,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { Provider } from "react-redux";
 import store from "./Store/store";
+import GistPage from "./Pages/GistPage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -43,6 +44,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />}/>
+        <Route path="/gist/:id" element={<GistPage />} />
       </Routes>
     </BrowserRouter>
     </Provider>

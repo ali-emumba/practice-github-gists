@@ -1,10 +1,7 @@
-
 import { useNavigate } from 'react-router-dom';
-import { IGistsdata } from './../Types/types';
 import { Avatar, Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 

@@ -46,10 +46,6 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
   const handleStarClick = (id: string) => {
     console.log(`Star clicked for gist ID: ${id}`);
@@ -112,7 +108,6 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </Paper>
   );
