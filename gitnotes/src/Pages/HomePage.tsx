@@ -16,7 +16,7 @@ console.log(publicGistData)
   };
 
   return (
-    <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', padding: '0 5vw', width: '100%'}}>
+    <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '93vh', padding: '5vh 5vw', width: '100%'}}>
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <Typography variant="h5">Public Gists</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
