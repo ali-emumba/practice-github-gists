@@ -7,15 +7,27 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
+
+interface publicGistDataProps {
+  id: string;
+  ownerName: string;
+  ownerImageUrl: string;
+  gistName: string;
+  createdAt: string;
+  gistDescription: string;
+  rawUrl: string;
+}
+
+
 export default function GistCard({
   id,
   ownerName,
   ownerImageUrl,
   gistName,
   createdAt,
-  gitDescripton,
+  gistDescription,
   rawUrl,
-}: IGistsdata) {
+}: publicGistDataProps) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -56,7 +68,7 @@ export default function GistCard({
               Created at {createdAt}
             </Typography>
             <Typography variant="caption" component="span">
-              {gitDescripton}
+              {gistDescription}
             </Typography>
           </GistInfo>
         </UserDetails>

@@ -14,7 +14,7 @@ const GistCardList = ({ publicGistData }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const cardsPerPage = 4;
 
-    const handleChangePage = (event, value) => {
+    const handleChangePage = (event, value: number) => {
         setCurrentPage(value);
     };
 

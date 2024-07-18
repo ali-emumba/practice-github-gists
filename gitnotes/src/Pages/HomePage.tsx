@@ -10,7 +10,7 @@ const HomePage = () => {
   const [viewMode, setViewMode] = useState('table');
   const data = usePublicGistsData(false);
   const publicGistData = data.data;
-
+console.log(publicGistData)
   const handleSwitchChange = () => {
     setViewMode((prevMode) => (prevMode === 'table' ? 'card' : 'table'));
   };
@@ -31,7 +31,7 @@ const HomePage = () => {
       </Box>
 
       <Container>
-      {viewMode === 'table' ? <GistsTable /> : <GistCardList publicGistData={publicGistData} />}
+      {viewMode === 'table' ? <GistsTable publicGistData={publicGistData}/> : <GistCardList publicGistData={publicGistData} />}
       </Container>
 
     </Container>

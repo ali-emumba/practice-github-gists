@@ -18,7 +18,7 @@ export interface IUser {
     ownerImageUrl: string;
     gistName: string;
     createdAt: string;
-    gitDescripton?: string;
+    gistDescription?: string;
     updatedAt?: string;
     rawUrl?: string;
   }
