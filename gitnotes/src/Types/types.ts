@@ -20,6 +20,7 @@ export interface IUser {
     createdAt: string;
     gitDescripton?: string;
     updatedAt?: string;
+    rawUrl?: string;
   }
   
   export interface IdataTableProps {
