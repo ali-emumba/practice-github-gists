@@ -1,9 +1,15 @@
-import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-
+import { useNavigate } from "react-router-dom";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface publicGistDataProps {
   id: string;
@@ -14,7 +20,6 @@ interface publicGistDataProps {
   gistDescription: string;
   rawUrl: string;
 }
-
 
 export default function GistCard({
   id,
@@ -31,8 +36,7 @@ export default function GistCard({
     navigate(`/gist/${id}`);
   };
 
-
-  const [fileData, setFileData] = useState('')
+  const [fileData, setFileData] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,16 +53,15 @@ export default function GistCard({
 
   return (
     <StyledCard onClick={handleCardClick}>
-        <StyledCardContent>
-            {fileData && fileData}
-        </StyledCardContent>
+      <StyledCardContent>{fileData && fileData}</StyledCardContent>
       <CardFooter>
         <Avatar src={ownerImageUrl} alt="User" sx={{ width: 60, height: 60 }} />
         <UserDetails>
           <Typography variant="body1" component="span">
-            {ownerName} / <Typography  fontWeight="bold" component="span">
-            {gistName}
-          </Typography>
+            {ownerName} /{" "}
+            <Typography fontWeight="bold" component="span">
+              {gistName}
+            </Typography>
           </Typography>
           <GistInfo>
             <Typography variant="caption" component="span">
