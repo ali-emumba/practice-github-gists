@@ -42,6 +42,8 @@ const GistPage = () => {
       { ...singleGistData.files }[key],
     ])[0][1];
 
+  singleGistData && console.log(singleGistData);
+
   return (
     <Container
       sx={{

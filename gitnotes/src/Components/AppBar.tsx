@@ -12,6 +12,7 @@ import {
   IconButton,
   Avatar,
   Typography,
+  Divider,
 } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
@@ -202,6 +203,10 @@ const Navbar = () => {
     navigate(`/gist/${sq}`); // Navigate to the search result page
   };
 
+  const handleYourGithubProfileClick = () => {
+    window.open(`https://github.com/`);
+  };
+
   return (
     <StyledAppBar>
       <Link to={"/"}>
@@ -249,9 +254,36 @@ const Navbar = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-              <MenuItem onClick={handleMenuClose}>My Account</MenuItem>
-              <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <Typography variant="body2">Signed in as</Typography>
+                <Typography>{user.displayName}</Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                }}
+              >
+                Your gists
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                }}
+              >
+                Starred gists
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleYourGithubProfileClick();
+                  handleMenuClose();
+                }}
+              >
+                Your Github profile
+              </MenuItem>
+              <Divider />
+
+              <MenuItem onClick={handleMenuClose}>Help</MenuItem>
               <MenuItem
                 onClick={() => {
                   handleLogout();
