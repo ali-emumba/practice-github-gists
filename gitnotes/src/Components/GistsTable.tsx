@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { Avatar, Box, IconButton } from "@mui/material";
+import { Avatar, Box, IconButton, Skeleton } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +42,13 @@ interface GistsTableProps {
 export default function GistsTable({ publicGistData }: GistsTableProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(7);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (publicGistData && publicGistData.length > 0) {
+      setLoading(false);
+    }
+  }, [publicGistData]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -79,11 +86,32 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {publicGistData &&
-              publicGistData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return (
+            {loading
+              ? Array.from(new Array(rowsPerPage)).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Skeleton variant="circular" width={40} height={40} />
+                      <Skeleton variant="text" width="60%" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width="80%" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width="80%" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width="90%" />
+                    </TableCell>
+                    <TableCell align="right" sx={{ display: "flex" }}>
+                      <Skeleton variant="rectangular" width={24} height={24} />
+                      <Skeleton variant="rectangular" width={24} height={24} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              : publicGistData &&
+                publicGistData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => (
                     <TableRow
                       hover
                       role="checkbox"
@@ -106,21 +134,26 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                       <TableCell>{row.gistDescription}</TableCell>
                       <TableCell align="right" sx={{ display: "flex" }}>
                         <IconButton
-                          onClick={() => handleStarClick(row.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStarClick(row.id);
+                          }}
                           aria-label="star"
                         >
                           <StarIcon />
                         </IconButton>
                         <IconButton
-                          onClick={() => handleForkClick(row.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleForkClick(row.id);
+                          }}
                           aria-label="fork"
                         >
                           <ForkRightIcon />
                         </IconButton>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
+                  ))}
           </TableBody>
         </Table>
       </TableContainer>

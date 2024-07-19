@@ -1,11 +1,17 @@
-import { useState } from 'react';
-import { Box, Typography, Switch, IconButton, styled, Container } from '@mui/material';
-import ListIcon from '@mui/icons-material/List';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import GistsTable from '../Components/GistsTable';
-import { usePublicGistsData } from '../Services/hooks/usePublicGistData';
-import GistCardList from '../Components/GistCardList';
-
+import { useState } from "react";
+import {
+  Box,
+  Typography,
+  Switch,
+  IconButton,
+  styled,
+  Container,
+} from "@mui/material";
+import ListIcon from "@mui/icons-material/List";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import GistsTable from "../Components/GistsTable";
+import { usePublicGistsData } from "../Services/hooks/usePublicGistData";
+import GistCardList from "../Components/GistCardList";
 
 const StyledContainer = styled(Container)`
   display: flex;
@@ -34,13 +40,13 @@ const ContentContainer = styled(Container)`
 `;
 
 const HomePage = () => {
-  const [viewMode, setViewMode] = useState('table');
+  const [viewMode, setViewMode] = useState("table");
   const data = usePublicGistsData(false);
   const publicGistData = data.data;
-  console.log(publicGistData);
+  //   console.log(publicGistData);
 
   const handleSwitchChange = () => {
-    setViewMode((prevMode) => (prevMode === 'table' ? 'card' : 'table'));
+    setViewMode((prevMode) => (prevMode === "table" ? "card" : "table"));
   };
 
   return (
@@ -48,17 +54,27 @@ const HomePage = () => {
       <HeaderBox>
         <Typography variant="h5">Public Gists</Typography>
         <ViewSwitchBox>
-          <IconButton onClick={handleSwitchChange} color={viewMode === 'table' ? 'primary' : 'default'}>
+          <IconButton
+            onClick={handleSwitchChange}
+            color={viewMode === "table" ? "primary" : "default"}
+          >
             <ListIcon />
           </IconButton>
-          <Switch checked={viewMode === 'card'} onChange={handleSwitchChange} />
-          <IconButton onClick={handleSwitchChange} color={viewMode === 'card' ? 'primary' : 'default'}>
+          <Switch checked={viewMode === "card"} onChange={handleSwitchChange} />
+          <IconButton
+            onClick={handleSwitchChange}
+            color={viewMode === "card" ? "primary" : "default"}
+          >
             <ViewModuleIcon />
           </IconButton>
         </ViewSwitchBox>
       </HeaderBox>
       <ContentContainer>
-        {viewMode === 'table' ? <GistsTable publicGistData={publicGistData} /> : <GistCardList publicGistData={publicGistData} />}
+        {viewMode === "table" ? (
+          <GistsTable publicGistData={publicGistData} />
+        ) : (
+          <GistCardList publicGistData={publicGistData} />
+        )}
       </ContentContainer>
     </StyledContainer>
   );

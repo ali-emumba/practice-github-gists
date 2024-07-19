@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Container, styled, Paper, TablePagination } from '@mui/material';
-import GistCard from './GistCard';
+import React, { useState } from "react";
+import { Container, styled, Paper, TablePagination } from "@mui/material";
+import GistCard from "./GistCard";
 
 const FlexContainer = styled(Container)`
   width: 100%;
@@ -10,20 +10,19 @@ const FlexContainer = styled(Container)`
   gap: 16px;
 `;
 
-
 interface publicGistData {
-    id: string;
-    ownerName: string;
-    ownerImageUrl: string;
-    gistName: string;
-    createdAt: string;
-    gistDescription: string;
-    rawUrl: string;
-  }
-  
-  interface GistsTableProps {
-    publicGistData: publicGistData[];
-  }
+  id: string;
+  ownerName: string;
+  ownerImageUrl: string;
+  gistName: string;
+  createdAt: string;
+  gistDescription: string;
+  rawUrl: string;
+}
+
+interface GistsTableProps {
+  publicGistData: publicGistData[];
+}
 
 const GistCardList = ({ publicGistData }: GistsTableProps) => {
   const [page, setPage] = useState(0);
@@ -33,10 +32,11 @@ const GistCardList = ({ publicGistData }: GistsTableProps) => {
     setPage(newPage);
   };
 
-
   const indexOfLastCard = page * rowsPerPage + rowsPerPage;
   const indexOfFirstCard = page * rowsPerPage;
-  const currentCards = publicGistData ? publicGistData.slice(indexOfFirstCard, indexOfLastCard) : [];
+  const currentCards = publicGistData
+    ? publicGistData.slice(indexOfFirstCard, indexOfLastCard)
+    : [];
 
   const renderedCards = currentCards.map((item) => (
     <GistCard
@@ -53,9 +53,7 @@ const GistCardList = ({ publicGistData }: GistsTableProps) => {
 
   return (
     <>
-      <FlexContainer>
-        {renderedCards}
-      </FlexContainer>
+      <FlexContainer>{renderedCards}</FlexContainer>
       {publicGistData && (
         <TablePagination
           component="span"

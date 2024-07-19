@@ -5,10 +5,12 @@ import {
   CardContent,
   CardHeader,
   Container,
+  Skeleton,
   styled,
   Typography,
+  Button,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAGist } from "../Services/hooks/useAGist";
 import JSONPretty from "react-json-pretty";
 import JSONPrettyMon from "react-json-pretty/dist/monikai";
@@ -31,116 +33,204 @@ const GistInfo = styled(Box)`
 
 const GistPage = () => {
   const { id } = useParams();
-  console.log(id);
-  const singleGistData = useAGist(id!);
+  const { data: singleGistData, error, isLoading } = useAGist(id!);
 
-  console.log({ ...singleGistData.data?.files });
   let extractedFileData =
-    singleGistData.data &&
-    Object.keys(singleGistData.data?.files!).map((key) => [
+    singleGistData &&
+    Object.keys(singleGistData.files!).map((key) => [
       key,
-      { ...singleGistData.data?.files }[key],
+      { ...singleGistData.files }[key],
     ])[0][1];
 
-  extractedFileData && console.log(extractedFileData);
-  //   const key = singleGistData && Object.keys(singleGistData.data.files[0]);
-  //   console.log(key, singleGistData.data.files[key].filename);
   return (
-    <>
-      {singleGistData && (
-        <Container
-          sx={{
-            minHeight: "93vh",
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box
-            sx={{
-              width: "95%",
-              minHeight: "80vh",
-              padding: "16px",
-            }}
-          >
-            <Box
-              sx={{
-                height: "15%",
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "16px",
-              }}
-            >
-              <Box sx={{ display: "flex", gap: "10px" }}>
-                <Avatar
-                  src={singleGistData.data?.owner!.avatar_url}
-                  alt="User"
-                  sx={{ width: 60, height: 60 }}
-                />
-                <UserDetails>
-                  <Typography
-                    variant="body1"
-                    component="span"
-                    sx={{ color: "#003B44", fontWeight: "bold" }}
-                  >
-                    {singleGistData.data?.owner?.login}{" "}
-                    <Typography fontWeight="bold" component="span">
-                      {/* {singleGistData.data?.gistName} */}
-                    </Typography>
-                  </Typography>
-                  <GistInfo>
-                    <Typography variant="caption" component="span">
-                      Created at {singleGistData.data?.createdAt!}
-                    </Typography>
-                    <Typography variant="caption" component="span">
-                      {singleGistData.data?.description}
-                    </Typography>
-                  </GistInfo>
-                </UserDetails>
-              </Box>
-            </Box>
-
-            <Card variant="outlined">
-              <CardHeader
-                title={extractedFileData && extractedFileData.filename!}
-                titleTypographyProps={{ variant: "h6" }}
-                sx={{
-                  borderBottom: "1px solid lightGray",
-                }}
-              />
-              <CardContent>
-                <JSONPretty
-                  id="json-pretty"
-                  data={extractedFileData && extractedFileData.content!}
-                  theme={JSONPrettyMon}
-                />
-              </CardContent>
-            </Card>
-          </Box>
-        </Container>
+    <Container
+      sx={{
+        minHeight: "93vh",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      {isLoading ? (
+        <SkeletonContainer />
+      ) : error ? (
+        <ErrorContainer />
+      ) : (
+        <ContentContainer
+          singleGistData={singleGistData}
+          extractedFileData={extractedFileData}
+        />
       )}
-    </>
+    </Container>
   );
 };
 
-export default GistPage;
+const SkeletonContainer = () => (
+  <Box
+    sx={{
+      width: "95%",
+      minHeight: "80vh",
+      padding: "16px",
+    }}
+  >
+    <Box
+      sx={{
+        height: "15%",
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "16px",
+      }}
+    >
+      <Box sx={{ display: "flex", gap: "10px" }}>
+        <Skeleton variant="circular" width={60} height={60} />
+        <UserDetails>
+          <Skeleton variant="text" width={120} />
+          <GistInfo>
+            <Skeleton variant="text" width={100} />
+            <Skeleton variant="text" width={150} />
+          </GistInfo>
+        </UserDetails>
+      </Box>
+    </Box>
 
-const json = {
-  policies: {
-    ExtensionSettings: {
-      "*": {
-        blocked_install_message: "Custom error message.",
-        install_sources: ["about:addons", "https://addons.mozilla.org/"],
-        installation_mode: "allowed",
-        allowed_types: ["extension"],
-      },
-      "{d634138d-c276-4fc8-924b-40a0ea21d284}": {
-        installation_mode: "force_installed",
-        install_url:
-          "https://addons.cdn.mozilla.net/user-media/addons/950528/1password_password_manager-1.23.1-fx.xpi?filehash=sha256%3A47e9e98f1072d93d595002dc8c221e5cca17e091b3431563a8e3e2be575c5cc1",
-      },
-    },
-  },
-};
+    <Card variant="outlined">
+      <CardHeader
+        title={<Skeleton variant="text" width="80%" />}
+        titleTypographyProps={{ variant: "h6" }}
+        sx={{
+          borderBottom: "1px solid lightGray",
+        }}
+      />
+      <CardContent>
+        <Skeleton variant="rectangular" width="100%" height={200} />
+      </CardContent>
+    </Card>
+  </Box>
+);
+
+const ErrorContainer = () => (
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      textAlign: "center",
+      padding: "16px",
+    }}
+  >
+    <Typography variant="h5" component="div" sx={{ color: "#D32F2F" }}>
+      No Gist Found
+    </Typography>
+    <Typography variant="body1" component="div" sx={{ marginTop: "8px" }}>
+      The gist you are looking for does not exist.
+    </Typography>
+    <Button
+      variant="contained"
+      color="primary"
+      component={Link}
+      to="/"
+      sx={{ marginTop: "16px" }}
+    >
+      Go to Homepage
+    </Button>
+  </Box>
+);
+
+interface GistOwner {
+  login: string;
+  avatar_url: string;
+}
+
+// Define the structure of the file data
+interface GistFile {
+  filename: string;
+  content: string;
+}
+
+// Define the structure of the Gist data
+interface GistData {
+  owner: GistOwner;
+  created_at: string;
+  description: string;
+  files: {
+    [key: string]: GistFile;
+  };
+}
+
+// Define the props for ContentContainer
+interface ContentContainerProps {
+  singleGistData: GistData;
+  extractedFileData: GistFile | null;
+}
+
+const ContentContainer = ({
+  singleGistData,
+  extractedFileData,
+}: ContentContainerProps) => (
+  <Box
+    sx={{
+      width: "95%",
+      minHeight: "80vh",
+      padding: "16px",
+    }}
+  >
+    <Box
+      sx={{
+        height: "15%",
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "16px",
+      }}
+    >
+      <Box sx={{ display: "flex", gap: "10px" }}>
+        <Avatar
+          src={singleGistData.owner.avatar_url}
+          alt="User"
+          sx={{ width: 60, height: 60 }}
+        />
+        <UserDetails>
+          <Typography
+            variant="body1"
+            component="span"
+            sx={{ color: "#003B44", fontWeight: "bold" }}
+          >
+            {singleGistData.owner.login}{" "}
+            <Typography fontWeight="bold" component="span">
+              {/* {singleGistData.gistName} */}
+            </Typography>
+          </Typography>
+          <GistInfo>
+            <Typography variant="caption" component="span">
+              Created at {singleGistData.created_at}
+            </Typography>
+            <Typography variant="caption" component="span">
+              {singleGistData.description}
+            </Typography>
+          </GistInfo>
+        </UserDetails>
+      </Box>
+    </Box>
+
+    <Card variant="outlined">
+      <CardHeader
+        title={extractedFileData && extractedFileData.filename}
+        titleTypographyProps={{ variant: "h6" }}
+        sx={{
+          borderBottom: "1px solid lightGray",
+        }}
+      />
+      <CardContent>
+        <JSONPretty
+          id="json-pretty"
+          data={extractedFileData && extractedFileData.content}
+          //   theme={JSONPrettyMon}
+        />
+      </CardContent>
+    </Card>
+  </Box>
+);
+
+export default GistPage;
