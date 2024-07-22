@@ -1,39 +1,62 @@
 import React from "react";
 import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Controller, Control, FieldErrors } from "react-hook-form";
 
-const AddGistData = ({
+// Define TypeScript types for component props
+interface AddGistDataProps {
+  index: number;
+  control: Control<any>;
+  errors: FieldErrors<any>;
+  removeFile: (index: number) => void;
+  isDeletable: boolean;
+}
+
+const AddGistData: React.FC<AddGistDataProps> = ({
   index,
-  gistData,
-  setGistData,
+  control,
+  errors,
   removeFile,
   isDeletable,
 }) => {
-  const handleInputChange = (e, field) => {
-    const newData = [...gistData.data];
-    newData[index][field] = e.target.value;
-    setGistData({ ...gistData, data: newData });
-  };
-
   return (
     <Box sx={{ mt: 2, mb: 2 }}>
-      <Box flex={"row"} alignItems={"center"}>
-        <TextField
-          placeholder="Filename including extension"
-          value={gistData.data[index].filename}
-          onChange={(e) => handleInputChange(e, "filename")}
-          InputProps={{
-            startAdornment: <InputAdornment position="start"></InputAdornment>,
-            style: {
-              height: "40px",
-              color: "black",
-              width: "250px",
-              borderRadius: "4px",
-              border: "1px solid white",
-            },
-          }}
-          variant="outlined"
-          sx={{ mb: 1 }}
+      <Box
+        flex={"row"}
+        alignItems={"center"}
+        display="flex"
+        sx={{
+          backgroundColor: "#EFEFEF",
+          p: 1,
+          border: "1px solid lightGray ",
+          borderBottom: "none",
+          borderRadius: "4px",
+        }}
+      >
+        <Controller
+          name={`data.${index}.filename`}
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              placeholder="Filename including extension"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start"></InputAdornment>
+                ),
+                style: {
+                  height: "40px",
+                  color: "black",
+                  width: "250px",
+                  borderRadius: "4px",
+                  fontSize: "14px",
+                },
+              }}
+              variant="outlined"
+              error={!!errors.data?.[index]?.filename}
+              helperText={errors.data?.[index]?.filename?.message}
+            />
+          )}
         />
         {isDeletable && (
           <IconButton
@@ -45,14 +68,22 @@ const AddGistData = ({
           </IconButton>
         )}
       </Box>
-      <TextField
-        placeholder="File content"
-        value={gistData.data[index].content}
-        onChange={(e) => handleInputChange(e, "content")}
-        multiline
-        rows={4}
-        variant="outlined"
-        fullWidth
+      <Controller
+        name={`data.${index}.content`}
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            placeholder="File content"
+            sx={{ fontSize: "14px" }}
+            multiline
+            rows={4}
+            variant="outlined"
+            fullWidth
+            error={!!errors.data?.[index]?.content}
+            helperText={errors.data?.[index]?.content?.message}
+          />
+        )}
       />
     </Box>
   );
