@@ -102,7 +102,7 @@ const StyledCard = styled(Card)`
   border-radius: 8px;
   padding: 16px;
   width: 380px;
-  height: 300px;
+  min-height: 300px;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: black;
@@ -112,14 +112,14 @@ const StyledCard = styled(Card)`
 
 const StyledCardContent = styled(CardContent)`
   margin-bottom: 16px;
-  height: 70%;
+  height: 250px;
   overflow: hidden;
   background-color: rgba(250, 250, 250, 1);
 `;
 
 const CardFooter = styled(Box)`
   display: flex;
-  height: 30%;
+  min-height: 50px;
   align-items: center;
   border-top: 1px solid #ddd;
   padding-top: 10px;

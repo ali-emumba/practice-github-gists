@@ -81,7 +81,10 @@ interface GistData {
   files: GistFile;
 }
 
-export const createGist = async (gistData: GistData, token: string) => {
+export const createGist = async (
+  gistData: GistData,
+  token: string | undefined
+) => {
   try {
     const response = await axios.post(GITHUB_API_URL, gistData, {
       headers: {
