@@ -136,10 +136,10 @@ const StyledLoginButton = styled(Button)(() => ({
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const provider = new GithubAuthProvider();
@@ -195,6 +195,10 @@ const Navbar = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleYourGistsClicked = () => {
+    navigate("/addGist");
   };
 
   const handleSearch = () => {
@@ -254,13 +258,24 @@ const Navbar = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleMenuClose}>
+              <MenuItem
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "start",
+                  gap: "8px",
+                }}
+                onClick={handleMenuClose}
+              >
                 <Typography variant="body2">Signed in as</Typography>
-                <Typography>{user.displayName}</Typography>
+                <Typography>
+                  {user.displayName ? user.displayName : user.email}
+                </Typography>
               </MenuItem>
               <Divider />
               <MenuItem
                 onClick={() => {
+                  handleYourGistsClicked();
                   handleMenuClose();
                 }}
               >
