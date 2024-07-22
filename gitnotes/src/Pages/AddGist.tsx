@@ -81,7 +81,7 @@ const AddGist: React.FC = () => {
       await createGist(gistData, userToken);
       toast.success("Gist created successfully!");
       reset(); // Clear fields on success
-    } catch (error) {
+    } catch (error: any) {
       toast.error("Error creating gist: " + error.message);
     } finally {
       setLoading(false);
@@ -141,14 +141,14 @@ const AddGist: React.FC = () => {
         <Box display="flex" justifyContent="space-between" mt={2}>
           <Button
             variant="contained"
-            color="primary"
+            sx={{ backgroundColor: "#EFEFEF", color: "#003B44" }}
             onClick={() => append({ filename: "", content: "" })}
           >
             Add File
           </Button>
           <Button
             variant="contained"
-            color="secondary"
+            sx={{ backgroundColor: "#003B44", color: "white" }}
             onClick={handleSubmit(onSubmit)}
             disabled={loading}
           >

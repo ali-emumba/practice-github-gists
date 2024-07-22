@@ -5,7 +5,6 @@ import HomePage from "./Pages/HomePage";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { Provider } from "react-redux";
 import store from "./Store/store";
@@ -31,7 +30,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const analytics = getAnalytics(app);
 console.log(app);
 
 function App() {

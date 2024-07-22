@@ -15,7 +15,6 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import GistsTable from "../Components/GistsTable";
 import GistCardList from "../Components/GistCardList";
 import { getPublicGists } from "../Services/gists";
-import { useAppSelector } from "../Store/hooks";
 import dayjs from "dayjs";
 
 const StyledContainer = styled(Container)`
@@ -44,8 +43,8 @@ const ContentContainer = styled(Container)`
   width: 100%;
 `;
 
-const getFilteredResults = (data) => {
-  return data.map((gist) => {
+const getFilteredResults = (data: any) => {
+  return data.map((gist: any) => {
     const firstFileKey = Object.keys(gist.files)[0];
     const firstFile = gist.files[firstFileKey];
 
@@ -76,7 +75,7 @@ const HomePage = () => {
       try {
         const data = await getPublicGists();
         setGists(getFilteredResults(data));
-      } catch (error) {
+      } catch (error: any) {
         setError("Error fetching gists: " + error.message);
       } finally {
         setLoading(false);

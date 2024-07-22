@@ -1,6 +1,5 @@
 import { getOctokitInstance } from "./octokit";
 import { IGistBody, IFile, IFileData } from "./../Types/types";
-import { Octokit } from "octokit";
 
 export const getAGist = async (id: string) => {
   const octokit = getOctokitInstance();
