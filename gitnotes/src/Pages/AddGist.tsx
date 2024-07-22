@@ -1,25 +1,25 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
   TextField,
   Typography,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import AddGistData from "../Components/AddGistData";
+import { useAppSelector } from "../Store/hooks";
+import { toast } from "react-toastify";
+import { createGist } from "./../Services/gists"; // Adjust the path based on your project structure
 
-// Define TypeScript types for form data
-type FileData = {
-  filename: string;
-  content: string;
-};
-
-type FormData = {
+// Define types for form data
+interface GistFormData {
   description: string;
-  data: FileData[];
-};
+  data: { filename: string; content: string }[];
+}
 
 const validationSchema = Yup.object().shape({
   description: Yup.string()
@@ -31,10 +31,7 @@ const validationSchema = Yup.object().shape({
         filename: Yup.string()
           .required("Filename is required")
           .max(30, "Filename must be at most 30 characters")
-          .matches(
-            /^[^/\\?%*:|"<>\.]+$/,
-            "Filename must not contain invalid characters"
-          ),
+          .matches(/\.[A-Za-z]+$/, "Filename must have an extension"),
         content: Yup.string()
           .required("Content is required")
           .max(1000, "Content must be at most 1000 characters"),
@@ -43,12 +40,15 @@ const validationSchema = Yup.object().shape({
     .min(1, "At least one file is required"),
 });
 
-const AddGist = () => {
+const AddGist: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<GistFormData>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       description: "",
@@ -61,8 +61,31 @@ const AddGist = () => {
     name: "data",
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Creating gist with data: ", data);
+  const userToken = useAppSelector((state) => state.auth.user?.accessToken);
+
+  const onSubmit = async (data: GistFormData) => {
+    setLoading(true);
+
+    const files = data.data.reduce((acc, file) => {
+      acc[file.filename] = { content: file.content };
+      return acc;
+    }, {});
+
+    const gistData = {
+      description: data.description,
+      public: false,
+      files: files,
+    };
+
+    try {
+      await createGist(gistData, userToken);
+      toast.success("Gist created successfully!");
+      reset(); // Clear fields on success
+    } catch (error) {
+      toast.error("Error creating gist: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -127,8 +150,9 @@ const AddGist = () => {
             variant="contained"
             color="secondary"
             onClick={handleSubmit(onSubmit)}
+            disabled={loading}
           >
-            Create Gist
+            {loading ? <CircularProgress size={24} /> : "Create Gist"}
           </Button>
         </Box>
       </Box>

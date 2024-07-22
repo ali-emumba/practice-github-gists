@@ -11,6 +11,7 @@ import { Avatar, Box, IconButton, Skeleton } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../Store/hooks";
 
 interface Column {
   id: "ownerName" | "gistName" | "createdAt" | "gistDescription" | "actions";
@@ -40,6 +41,7 @@ interface GistsTableProps {
 }
 
 export default function GistsTable({ publicGistData }: GistsTableProps) {
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(7);
   const [loading, setLoading] = React.useState(true);
@@ -138,6 +140,7 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                             e.stopPropagation();
                             handleStarClick(row.id);
                           }}
+                          disabled={!isAuthenticated}
                           aria-label="star"
                         >
                           <StarIcon />
@@ -147,6 +150,7 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                             e.stopPropagation();
                             handleForkClick(row.id);
                           }}
+                          disabled={!isAuthenticated}
                           aria-label="fork"
                         >
                           <ForkRightIcon />

@@ -3,7 +3,6 @@ import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Controller, Control, FieldErrors } from "react-hook-form";
 
-// Define TypeScript types for component props
 interface AddGistDataProps {
   index: number;
   control: Control<any>;
