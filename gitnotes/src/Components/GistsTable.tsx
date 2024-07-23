@@ -8,11 +8,11 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Avatar, Box, IconButton, Skeleton } from "@mui/material";
-import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../Store/hooks";
-import { forkGist, starGist } from "../Services/gists";
+import { forkGist, starGist } from "../Services/gistsUtilFunctions";
 import { toast } from "react-toastify";
 
 interface Column {
@@ -186,7 +186,7 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                               height={24}
                             />
                           ) : (
-                            <StarIcon />
+                            <StarBorderIcon />
                           )}
                         </IconButton>
                         <IconButton

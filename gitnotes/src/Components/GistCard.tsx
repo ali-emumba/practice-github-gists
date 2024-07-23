@@ -4,15 +4,22 @@ import {
   Box,
   Card,
   CardContent,
+  IconButton,
   Skeleton,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import JSONPretty from "react-json-pretty";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import ForkRightIcon from "@mui/icons-material/ForkRight";
+import { toast } from "react-toastify";
+import { forkGist, starGist } from "../Services/gistsUtilFunctions"; // Import the functions
+import { useAppSelector } from "../Store/hooks";
 
-interface publicGistDataProps {
+interface GistCardProps {
   id: string;
   ownerName: string;
   ownerImageUrl: string;
@@ -32,15 +39,19 @@ export default function GistCard({
   gistDescription,
   rawUrl,
   fullWidth,
-}: publicGistDataProps) {
+}: GistCardProps) {
   const navigate = useNavigate();
+  const [fileData, setFileData] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [starLoading, setStarLoading] = useState<string | null>(null); // Track which gist is loading for starring
+  const [forkLoading, setForkLoading] = useState<string | null>(null); // Track which gist is loading for forking
+
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const userAuthToken = useAppSelector((state) => state.auth.user?.accessToken);
 
   const handleCardClick = () => {
     navigate(`/gist/${id}`);
   };
-
-  const [fileData, setFileData] = useState("");
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,6 +66,44 @@ export default function GistCard({
 
     fetchData();
   }, [rawUrl]);
+
+  const handleStarClick = async (id: string) => {
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    setStarLoading(id);
+
+    try {
+      await starGist(id, userAuthToken);
+      toast.success(`Star successful for gist ID: ${id}`);
+    } catch (error) {
+      console.error("Error starring gist:", error);
+      toast.error("Error starring gist. Please try again.");
+    } finally {
+      setStarLoading(null);
+    }
+  };
+
+  const handleForkClick = async (id: string) => {
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    setForkLoading(id);
+
+    try {
+      await forkGist(id, userAuthToken);
+      toast.success(`Fork successful for gist ID: ${id}`);
+    } catch (error) {
+      console.error("Error forking gist:", error);
+      toast.error("Error forking gist. Please try again.");
+    } finally {
+      setForkLoading(null);
+    }
+  };
 
   return (
     <StyledCard
@@ -95,6 +144,36 @@ export default function GistCard({
                 </Typography>
               </GistInfo>
             </UserDetails>
+            <ActionButtons className="action-buttons">
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleForkClick(id);
+                }}
+                disabled={!isAuthenticated || forkLoading === id}
+                aria-label="fork"
+              >
+                {forkLoading === id ? (
+                  <Skeleton variant="circular" width={24} height={24} />
+                ) : (
+                  <ForkRightIcon />
+                )}
+              </IconButton>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStarClick(id);
+                }}
+                disabled={!isAuthenticated || starLoading === id}
+                aria-label="star"
+              >
+                {starLoading === id ? (
+                  <Skeleton variant="circular" width={24} height={24} />
+                ) : (
+                  <StarBorderIcon />
+                )}
+              </IconButton>
+            </ActionButtons>
           </CardFooter>
         </>
       )}
@@ -113,6 +192,10 @@ const StyledCard = styled(Card)`
   color: black;
   overflow: hidden;
   cursor: pointer;
+  position: relative;
+  &:hover .action-buttons {
+    opacity: 1;
+  }
 `;
 
 const StyledCardContent = styled(CardContent)`
@@ -125,14 +208,16 @@ const StyledCardContent = styled(CardContent)`
 const CardFooter = styled(Box)`
   display: flex;
   min-height: 50px;
-  align-items: center;
   border-top: 1px solid #ddd;
   padding-top: 10px;
   overflow: hidden;
+  position: relative;
 `;
 
 const UserDetails = styled(Box)`
   display: flex;
+  width: 60%;
+  overflow: hidden;
   flex-direction: column;
   line-height: 1;
   margin-left: 10px;
@@ -145,4 +230,9 @@ const GistInfo = styled(Box)`
   span {
     display: block;
   }
+`;
+
+const ActionButtons = styled(Box)`
+  flex-grow: 1;
+  display: flex;
 `;

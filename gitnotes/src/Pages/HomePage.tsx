@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Switch,
   IconButton,
   styled,
   Container,
@@ -14,7 +13,7 @@ import ListIcon from "@mui/icons-material/List";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import GistsTable from "../Components/GistsTable";
 import GistCardList from "../Components/GistCardList";
-import { getPublicGists } from "../Services/gists";
+import { getPublicGists } from "../Services/gistsUtilFunctions";
 import dayjs from "dayjs";
 
 const StyledContainer = styled(Container)`
@@ -85,8 +84,12 @@ const HomePage = () => {
     fetchGists();
   }, []);
 
-  const handleSwitchChange = () => {
-    setViewMode((prevMode) => (prevMode === "table" ? "card" : "table"));
+  const handleTableView = () => {
+    setViewMode("table");
+  };
+
+  const handleCardView = () => {
+    setViewMode("card");
   };
 
   return (
@@ -95,14 +98,13 @@ const HomePage = () => {
         <Typography variant="h5">Public Gists</Typography>
         <ViewSwitchBox>
           <IconButton
-            onClick={handleSwitchChange}
+            onClick={handleTableView}
             color={viewMode === "table" ? "primary" : "default"}
           >
             <ListIcon />
           </IconButton>
-          <Switch checked={viewMode === "card"} onChange={handleSwitchChange} />
           <IconButton
-            onClick={handleSwitchChange}
+            onClick={handleCardView}
             color={viewMode === "card" ? "primary" : "default"}
           >
             <ViewModuleIcon />

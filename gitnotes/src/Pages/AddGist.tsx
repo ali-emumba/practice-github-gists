@@ -13,7 +13,7 @@ import * as Yup from "yup";
 import AddGistData from "../Components/AddGistData";
 import { useAppSelector } from "../Store/hooks";
 import { toast } from "react-toastify";
-import { createGist } from "./../Services/gists"; // Adjust the path based on your project structure
+import { createGist } from "../Services/gistsUtilFunctions"; // Adjust the path based on your project structure
 
 // Define types for form data
 interface GistFormData {
