@@ -12,6 +12,7 @@ import GistPage from "./Pages/GistPage";
 import ProtectedRoute from "./ProtectedRoutes";
 import AddGist from "./Pages/AddGist";
 import UserGists from "./Pages/UserGists";
+import StarredGists from "./Pages/StarredGists";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -47,6 +48,10 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/userGists" element={<UserGists />} />{" "}
+            {/* Protected route */}
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/starredGists" element={<StarredGists />} />{" "}
             {/* Protected route */}
           </Route>
         </Routes>

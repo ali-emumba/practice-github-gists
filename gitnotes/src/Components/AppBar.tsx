@@ -21,6 +21,7 @@ import { useAppDispatch, useAppSelector } from "../Store/hooks";
 import { login, logout } from "../Store/slices/authUser";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const logo = (
   <>
@@ -155,6 +156,7 @@ const Navbar = () => {
         console.log(token);
         const user = result.user;
         console.log(user);
+        toast.success("logged in successfully");
         dispatch(
           login({
             accessToken: token,
@@ -171,6 +173,7 @@ const Navbar = () => {
         const errorMessage = error.message;
         const email = error.customData.email;
         const credential = GithubAuthProvider.credentialFromError(error);
+        toast.error("error loging in -- ", errorMessage);
       })
       .finally(() => {
         // do something
@@ -182,9 +185,11 @@ const Navbar = () => {
       .signOut()
       .then(() => {
         console.log("Logged out");
+        toast.success("logged out successfully");
         dispatch(logout());
       })
       .catch((e) => {
+        toast.error("error logging out");
         console.log(e);
       });
   };
@@ -203,6 +208,10 @@ const Navbar = () => {
 
   const handleYourGistsClicked = () => {
     navigate("/userGists");
+  };
+
+  const handleStarredGistsClicked = () => {
+    navigate("/starredGists");
   };
 
   const handleSearch = () => {
@@ -296,6 +305,7 @@ const Navbar = () => {
               <MenuItem
                 onClick={() => {
                   handleMenuClose();
+                  handleStarredGistsClicked();
                 }}
               >
                 Starred gists
