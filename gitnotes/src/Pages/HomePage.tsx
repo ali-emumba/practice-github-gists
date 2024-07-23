@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Switch,
   IconButton,
   styled,
   Container,
+  CircularProgress,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import ListIcon from "@mui/icons-material/List";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import GistsTable from "../Components/GistsTable";
-import { usePublicGistsData } from "../Services/hooks/usePublicGistData";
 import GistCardList from "../Components/GistCardList";
+import { getPublicGists } from "../Services/gistsUtilFunctions";
+import dayjs from "dayjs";
 
 const StyledContainer = styled(Container)`
   display: flex;
@@ -39,14 +42,54 @@ const ContentContainer = styled(Container)`
   width: 100%;
 `;
 
+const getFilteredResults = (data: any) => {
+  return data.map((gist: any) => {
+    const firstFileKey = Object.keys(gist.files)[0];
+    const firstFile = gist.files[firstFileKey];
+
+    return {
+      id: gist.id,
+      fileName: firstFile,
+      ownerName: gist.owner.login,
+      ownerImageUrl: gist.owner.avatar_url,
+      gistName: firstFile.filename,
+      createdAt: dayjs(gist.created_at).format("DD-MM-YYYY"),
+      gistDescription: gist.description,
+      updatedAt: dayjs(gist.updated_at).format("DD-MM-YYYY"),
+      gitHubUrl: gist.owner.html_url,
+    };
+  });
+};
+
 const HomePage = () => {
   const [viewMode, setViewMode] = useState("table");
-  const data = usePublicGistsData(false);
-  const publicGistData = data.data;
-  //   console.log(publicGistData);
+  const [gists, setGists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handleSwitchChange = () => {
-    setViewMode((prevMode) => (prevMode === "table" ? "card" : "table"));
+  useEffect(() => {
+    const fetchGists = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await getPublicGists();
+        setGists(getFilteredResults(data));
+      } catch (error: any) {
+        setError("Error fetching gists: " + error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGists();
+  }, []);
+
+  const handleTableView = () => {
+    setViewMode("table");
+  };
+
+  const handleCardView = () => {
+    setViewMode("card");
   };
 
   return (
@@ -55,14 +98,13 @@ const HomePage = () => {
         <Typography variant="h5">Public Gists</Typography>
         <ViewSwitchBox>
           <IconButton
-            onClick={handleSwitchChange}
+            onClick={handleTableView}
             color={viewMode === "table" ? "primary" : "default"}
           >
             <ListIcon />
           </IconButton>
-          <Switch checked={viewMode === "card"} onChange={handleSwitchChange} />
           <IconButton
-            onClick={handleSwitchChange}
+            onClick={handleCardView}
             color={viewMode === "card" ? "primary" : "default"}
           >
             <ViewModuleIcon />
@@ -70,10 +112,24 @@ const HomePage = () => {
         </ViewSwitchBox>
       </HeaderBox>
       <ContentContainer>
-        {viewMode === "table" ? (
-          <GistsTable publicGistData={publicGistData} />
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="50vh"
+          >
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            {error}
+          </Alert>
+        ) : viewMode === "table" ? (
+          <GistsTable publicGistData={gists} />
         ) : (
-          <GistCardList publicGistData={publicGistData} />
+          <GistCardList publicGistData={gists} />
         )}
       </ContentContainer>
     </StyledContainer>

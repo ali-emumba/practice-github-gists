@@ -12,6 +12,7 @@ import {
   IconButton,
   Avatar,
   Typography,
+  Divider,
 } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
@@ -135,10 +136,10 @@ const StyledLoginButton = styled(Button)(() => ({
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const provider = new GithubAuthProvider();
@@ -196,10 +197,22 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  const handleCreateGistsClicked = () => {
+    navigate("/addGist");
+  };
+
+  const handleYourGistsClicked = () => {
+    navigate("/userGists");
+  };
+
   const handleSearch = () => {
     let sq = searchQuery;
     setSearchQuery("");
     navigate(`/gist/${sq}`); // Navigate to the search result page
+  };
+
+  const handleYourGithubProfileClick = () => {
+    window.open(`https://github.com/`);
   };
 
   return (
@@ -249,9 +262,55 @@ const Navbar = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-              <MenuItem onClick={handleMenuClose}>My Account</MenuItem>
-              <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
+              <MenuItem
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "start",
+                  gap: "8px",
+                }}
+                onClick={handleMenuClose}
+              >
+                <Typography variant="body2">Signed in as</Typography>
+                <Typography>
+                  {user.displayName ? user.displayName : user.email}
+                </Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => {
+                  handleYourGistsClicked();
+                  handleMenuClose();
+                }}
+              >
+                Your gists
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleCreateGistsClicked();
+                  handleMenuClose();
+                }}
+              >
+                Create gists
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose();
+                }}
+              >
+                Starred gists
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleYourGithubProfileClick();
+                  handleMenuClose();
+                }}
+              >
+                Your Github profile
+              </MenuItem>
+              <Divider />
+
+              <MenuItem onClick={handleMenuClose}>Help</MenuItem>
               <MenuItem
                 onClick={() => {
                   handleLogout();

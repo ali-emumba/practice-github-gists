@@ -8,9 +8,12 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Avatar, Box, IconButton, Skeleton } from "@mui/material";
-import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../Store/hooks";
+import { forkGist, starGist } from "../Services/gistsUtilFunctions";
+import { toast } from "react-toastify";
 
 interface Column {
   id: "ownerName" | "gistName" | "createdAt" | "gistDescription" | "actions";
@@ -40,9 +43,14 @@ interface GistsTableProps {
 }
 
 export default function GistsTable({ publicGistData }: GistsTableProps) {
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(7);
   const [loading, setLoading] = React.useState(true);
+  const [starLoading, setStarLoading] = React.useState<string | null>(null); // Track which gist is loading for starring
+  const [forkLoading, setForkLoading] = React.useState<string | null>(null); // Track which gist is loading for forking
+
+  const userAuthToken = useAppSelector((state) => state.auth.user?.accessToken);
 
   React.useEffect(() => {
     if (publicGistData && publicGistData.length > 0) {
@@ -60,12 +68,42 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
     navigate(`/gist/${id}`);
   };
 
-  const handleStarClick = (id: string) => {
-    console.log(`Star clicked for gist ID: ${id}`);
+  const handleStarClick = async (id: string) => {
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    setStarLoading(id);
+
+    try {
+      await starGist(id, userAuthToken);
+      toast.success(`Star successful for gist ID: ${id}`);
+    } catch (error) {
+      console.error("Error starring gist:", error);
+      toast.error("Error starring gist. Please try again.");
+    } finally {
+      setStarLoading(null);
+    }
   };
 
-  const handleForkClick = (id: string) => {
-    console.log(`Fork clicked for gist ID: ${id}`);
+  const handleForkClick = async (id: string) => {
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    setForkLoading(id);
+
+    try {
+      await forkGist(id, userAuthToken);
+      toast.success(`Fork successful for gist ID: ${id}`);
+    } catch (error) {
+      console.error("Error forking gist:", error);
+      toast.error("Error forking gist. Please try again.");
+    } finally {
+      setForkLoading(null);
+    }
   };
 
   return (
@@ -138,18 +176,36 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                             e.stopPropagation();
                             handleStarClick(row.id);
                           }}
+                          disabled={!isAuthenticated || starLoading === row.id}
                           aria-label="star"
                         >
-                          <StarIcon />
+                          {starLoading === row.id ? (
+                            <Skeleton
+                              variant="circular"
+                              width={24}
+                              height={24}
+                            />
+                          ) : (
+                            <StarBorderIcon />
+                          )}
                         </IconButton>
                         <IconButton
                           onClick={(e) => {
                             e.stopPropagation();
                             handleForkClick(row.id);
                           }}
+                          disabled={!isAuthenticated || forkLoading === row.id}
                           aria-label="fork"
                         >
-                          <ForkRightIcon />
+                          {forkLoading === row.id ? (
+                            <Skeleton
+                              variant="circular"
+                              width={24}
+                              height={24}
+                            />
+                          ) : (
+                            <ForkRightIcon />
+                          )}
                         </IconButton>
                       </TableCell>
                     </TableRow>
