@@ -145,7 +145,7 @@ const UserGists = () => {
         overflowX: "hidden",
         display: "flex",
         flexDirection: { xs: "column", sm: "row" },
-        px: { sm: "2vw", md: "8vw", lg: "16vw" },
+        px: { sm: "4vw", md: "8vw", lg: "16vw" },
         py: "3rem",
         gap: "3rem",
       }}
@@ -176,7 +176,12 @@ const UserGists = () => {
         )}
       </Sidebar>
       <MainContent>
-        <Box display="flex" alignItems="center" mb={2}>
+        <Box
+          display="flex"
+          alignItems="center"
+          mb={2}
+          sx={isMobile ? { justifyContent: "center" } : null}
+        >
           <Typography variant="h4" component="h2">
             All Gists
           </Typography>
