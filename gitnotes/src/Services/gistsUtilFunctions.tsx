@@ -163,3 +163,18 @@ export const starGist = async (gistId: string, token: string) => {
     throw error;
   }
 };
+
+export const getStarredGists = async (accessToken: string) => {
+  try {
+    const response = await axios.get("https://api.github.com/gists/starred", {
+      headers: {
+        Authorization: `token ${accessToken}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch starred gists:", error);
+    throw new Error("Failed to fetch starred gists");
+  }
+};
