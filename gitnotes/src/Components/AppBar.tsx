@@ -197,8 +197,12 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const handleYourGistsClicked = () => {
+  const handleCreateGistsClicked = () => {
     navigate("/addGist");
+  };
+
+  const handleYourGistsClicked = () => {
+    navigate("/userGists");
   };
 
   const handleSearch = () => {
@@ -280,6 +284,14 @@ const Navbar = () => {
                 }}
               >
                 Your gists
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleCreateGistsClicked();
+                  handleMenuClose();
+                }}
+              >
+                Create gists
               </MenuItem>
               <MenuItem
                 onClick={() => {

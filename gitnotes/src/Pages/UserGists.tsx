@@ -45,11 +45,7 @@ const Sidebar = styled(Box)`
 
 const MainContent = styled(Box)`
   flex-grow: 1;
-  padding: 24px;
-
-  @media (max-width: 600px) {
-    padding: 16px;
-  }
+  overflow-x: hidden;
 `;
 
 const UserProfile = styled(Box)`
@@ -63,8 +59,8 @@ const GistCountCircle = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   background-color: #003b44;
   color: white;
   border-radius: 50%;
@@ -147,6 +143,8 @@ const UserGists = () => {
   return (
     <Box
       sx={{
+        width: "100%",
+        overflowX: "hidden",
         display: "flex",
         flexDirection: { xs: "column", sm: "row" },
         px: { sm: "2vw", md: "8vw", lg: "16vw" },
