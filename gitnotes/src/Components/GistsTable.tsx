@@ -12,6 +12,7 @@ import StarIcon from "@mui/icons-material/Star";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../Store/hooks";
+import { forkGist } from "../Services/gists"; // Import the forkGist function
 
 interface Column {
   id: "ownerName" | "gistName" | "createdAt" | "gistDescription" | "actions";
@@ -46,6 +47,8 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
   const [rowsPerPage, setRowsPerPage] = React.useState(7);
   const [loading, setLoading] = React.useState(true);
 
+  const userAuthToken = useAppSelector((state) => state.auth.user?.accessToken);
+
   React.useEffect(() => {
     if (publicGistData && publicGistData.length > 0) {
       setLoading(false);
@@ -66,8 +69,19 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
     console.log(`Star clicked for gist ID: ${id}`);
   };
 
-  const handleForkClick = (id: string) => {
-    console.log(`Fork clicked for gist ID: ${id}`);
+  const handleForkClick = async (id: string) => {
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    try {
+      await forkGist(id, userAuthToken);
+      console.log(`Fork successful for gist ID: ${id}`);
+      // Optionally, refresh data or show a success message
+    } catch (error) {
+      console.error("Error forking gist:", error);
+    }
   };
 
   return (

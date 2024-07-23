@@ -20,6 +20,7 @@ interface publicGistDataProps {
   createdAt: string;
   gistDescription: string;
   rawUrl: string;
+  fullWidth: boolean;
 }
 
 export default function GistCard({
@@ -30,6 +31,7 @@ export default function GistCard({
   createdAt,
   gistDescription,
   rawUrl,
+  fullWidth,
 }: publicGistDataProps) {
   const navigate = useNavigate();
 
@@ -55,7 +57,10 @@ export default function GistCard({
   }, [rawUrl]);
 
   return (
-    <StyledCard onClick={handleCardClick}>
+    <StyledCard
+      onClick={handleCardClick}
+      sx={fullWidth ? { width: "100%" } : null}
+    >
       {loading ? (
         <Skeleton
           variant="rectangular"

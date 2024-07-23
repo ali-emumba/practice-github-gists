@@ -40,6 +40,7 @@ const GistCardList = ({ publicGistData }: GistsTableProps) => {
 
   const renderedCards = currentCards.map((item) => (
     <GistCard
+      fullWidth={false}
       id={item.id}
       rawUrl={item.fileName.raw_url}
       createdAt={item.createdAt}

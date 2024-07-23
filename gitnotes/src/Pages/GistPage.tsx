@@ -11,9 +11,9 @@ import {
   Button,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
-import { useAGist } from "../Services/hooks/useAGist";
+import { useEffect, useState } from "react";
 import JSONPretty from "react-json-pretty";
-import JSONPrettyMon from "react-json-pretty/dist/monikai";
+import { fetchGist, GistData, GistFile } from "../Services/gists"; // Import the function and types
 
 const UserDetails = styled(Box)`
   display: flex;
@@ -33,16 +33,39 @@ const GistInfo = styled(Box)`
 
 const GistPage = () => {
   const { id } = useParams();
-  const { data: singleGistData, error, isLoading } = useAGist(id!);
 
-  let extractedFileData =
-    singleGistData &&
-    Object.keys(singleGistData.files!).map((key) => [
-      key,
-      { ...singleGistData.files }[key],
-    ])[0][1];
+  const [singleGistData, setSingleGistData] = useState<GistData | null>(null);
+  const [extractedFileData, setExtractedFileData] = useState<GistFile | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  singleGistData && console.log(singleGistData);
+  // Fetch gist data and update state
+  useEffect(() => {
+    const loadGistData = async (gistId: string) => {
+      try {
+        const data = await fetchGist(gistId);
+        setSingleGistData(data);
+
+        // Extract the first file's data
+        const fileData = Object.keys(data.files).map((key) => [
+          key,
+          data.files[key],
+        ])[0][1];
+        setExtractedFileData(fileData as GistFile);
+
+        setIsLoading(false);
+      } catch (error) {
+        setError("Failed to load gist data.");
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      loadGistData(id);
+    }
+  }, [id]);
 
   return (
     <Container
@@ -61,7 +84,7 @@ const GistPage = () => {
         <ErrorContainer />
       ) : (
         <ContentContainer
-          singleGistData={singleGistData}
+          singleGistData={singleGistData!}
           extractedFileData={extractedFileData}
         />
       )}
@@ -141,27 +164,6 @@ const ErrorContainer = () => (
   </Box>
 );
 
-interface GistOwner {
-  login: string;
-  avatar_url: string;
-}
-
-// Define the structure of the file data
-interface GistFile {
-  filename: string;
-  content: string;
-}
-
-// Define the structure of the Gist data
-interface GistData {
-  owner: GistOwner;
-  created_at: string;
-  description: string;
-  files: {
-    [key: string]: GistFile;
-  };
-}
-
 // Define the props for ContentContainer
 interface ContentContainerProps {
   singleGistData: GistData;
@@ -228,7 +230,6 @@ const ContentContainer = ({
         <JSONPretty
           id="json-pretty"
           data={extractedFileData && extractedFileData.content}
-          //   theme={JSONPrettyMon}
         />
       </CardContent>
     </Card>

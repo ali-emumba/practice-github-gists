@@ -69,20 +69,20 @@ import axios from "axios";
 const GITHUB_API_URL = "https://api.github.com/gists";
 const GITHUB_API_VERSION = "2022-11-28";
 
-interface GistFile {
+interface CreateGistFile {
   [filename: string]: {
     content: string;
   };
 }
 
-interface GistData {
+interface CreateGistData {
   description: string;
   public: boolean;
-  files: GistFile;
+  files: CreateGistFile;
 }
 
 export const createGist = async (
-  gistData: GistData,
+  gistData: CreateGistData,
   token: string | undefined
 ) => {
   try {
@@ -115,7 +115,7 @@ export const getPublicGists = async () => {
   }
 };
 
-export const getUserGists = async (token: string) => {
+export const getUserGists = async (token: string | undefined) => {
   try {
     const response = await axios.get("https://api.github.com/gists", {
       headers: {
@@ -128,5 +128,85 @@ export const getUserGists = async (token: string) => {
     throw new Error(
       error.response?.data?.message || "Error fetching user gists"
     );
+  }
+};
+
+// Define the structure of the Gist owner
+export interface GistOwner {
+  login: string;
+  avatar_url: string;
+}
+
+// Define the structure of a file within the Gist
+export interface GistFile {
+  filename: string;
+  content: string;
+}
+
+// Define the structure of the entire Gist data
+export interface GistData {
+  owner: GistOwner;
+  created_at: string;
+  description: string;
+  files: {
+    [key: string]: GistFile;
+  };
+}
+
+// Function to fetch a single gist data using the GitHub API
+export const fetchGist = async (id: string): Promise<GistData> => {
+  try {
+    const response = await axios.get(`https://api.github.com/gists/${id}`);
+    return response.data as GistData;
+  } catch (error) {
+    console.error("Failed to fetch gist data:", error);
+    throw new Error("Failed to fetch gist data.");
+  }
+};
+
+export interface UserGistData {
+  id: string;
+  owner: GistOwner;
+  createdAt: string;
+  gistName: string;
+  gistDescription: string;
+  rawUrl: string;
+  files: {
+    [key: string]: GistFile;
+  };
+}
+
+// export const fetchUserGists = async (
+//   id: string | undefined
+// ): Promise<UserGistData[]> => {
+//   try {
+//     const response = await axios.get(
+//       `https://api.github.com/users/${id}/gists`
+//     );
+//     return response.data as UserGistData[];
+//   } catch (error) {
+//     console.error("Failed to fetch user gists:", error);
+//     throw new Error("Failed to fetch user gists.");
+//   }
+// };
+
+const GITHUB_API_BASE_URL = "https://api.github.com"; // GitHub API base URL
+
+export const forkGist = async (gistId: string, token: string) => {
+  try {
+    const response = await axios.post(
+      `${GITHUB_API_BASE_URL}/gists/${gistId}/forks`,
+      {},
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error forking gist:", error);
+    throw error;
   }
 };
