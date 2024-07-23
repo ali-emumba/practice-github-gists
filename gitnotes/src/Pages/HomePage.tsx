@@ -22,7 +22,7 @@ const StyledContainer = styled(Container)`
   justify-content: center;
   min-height: 93vh;
   padding: 5vh 5vw;
-  width: 100%;
+  width: 100vw;
 `;
 
 const HeaderBox = styled(Box)`
