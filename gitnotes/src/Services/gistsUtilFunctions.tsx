@@ -28,6 +28,7 @@ export interface GistOwner {
 export interface GistFile {
   filename: string;
   content: string;
+  raw_url?: string;
 }
 
 export interface GistData {
