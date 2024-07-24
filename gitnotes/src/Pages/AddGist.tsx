@@ -21,6 +21,7 @@ interface GistFormData {
   data: { filename: string; content: string }[];
 }
 
+// Validation schema using Yup
 const validationSchema = Yup.object().shape({
   description: Yup.string()
     .required("Description is required")
@@ -66,15 +67,18 @@ const AddGist: React.FC = () => {
   const onSubmit = async (data: GistFormData) => {
     setLoading(true);
 
-    const files = data.data.reduce((acc, file) => {
-      acc[file.filename] = { content: file.content };
-      return acc;
-    }, {});
+    const files = data.data.reduce(
+      (acc: Record<string, { content: string }>, file) => {
+        acc[file.filename] = { content: file.content };
+        return acc;
+      },
+      {}
+    );
 
     const gistData = {
       description: data.description,
       public: false,
-      files: files,
+      files,
     };
 
     try {
@@ -82,7 +86,7 @@ const AddGist: React.FC = () => {
       toast.success("Gist created successfully!");
       reset(); // Clear fields on success
     } catch (error: any) {
-      toast.error("Error creating gist: " + error.message);
+      toast.error(`Error creating gist: ${error.message}`);
     } finally {
       setLoading(false);
     }

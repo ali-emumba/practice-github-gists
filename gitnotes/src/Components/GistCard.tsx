@@ -7,7 +7,6 @@ import {
   IconButton,
   Skeleton,
   Typography,
-  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";

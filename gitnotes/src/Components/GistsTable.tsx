@@ -1,4 +1,3 @@
-import * as React from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -14,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../Store/hooks";
 import { forkGist, starGist } from "../Services/gistsUtilFunctions";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 
 interface Column {
   id: "ownerName" | "gistName" | "createdAt" | "gistDescription" | "actions";
@@ -44,21 +44,22 @@ interface GistsTableProps {
 
 export default function GistsTable({ publicGistData }: GistsTableProps) {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(7);
-  const [loading, setLoading] = React.useState(true);
-  const [starLoading, setStarLoading] = React.useState<string | null>(null); // Track which gist is loading for starring
-  const [forkLoading, setForkLoading] = React.useState<string | null>(null); // Track which gist is loading for forking
+  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(7);
+  const [loading, setLoading] = useState(true);
+  const [starLoading, setStarLoading] = useState<string | null>(null); // Track which gist is loading for starring
+  const [forkLoading, setForkLoading] = useState<string | null>(null); // Track which gist is loading for forking
 
   const userAuthToken = useAppSelector((state) => state.auth.user?.accessToken);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (publicGistData && publicGistData.length > 0) {
       setLoading(false);
     }
   }, [publicGistData]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
+    console.log(event);
     setPage(newPage);
   };
 

@@ -169,10 +169,7 @@ const Navbar = () => {
       })
       .catch((error) => {
         console.log(error);
-        const errorCode = error.code;
         const errorMessage = error.message;
-        const email = error.customData.email;
-        const credential = GithubAuthProvider.credentialFromError(error);
         toast.error("error loging in -- ", errorMessage);
       })
       .finally(() => {
