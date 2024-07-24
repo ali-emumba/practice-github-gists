@@ -69,24 +69,36 @@ interface StarredGistData {
   id: string;
   owner: GistOwner;
   created_at: string;
-  gistName: string;
   description: string;
   updated_at: string;
   html_url: string;
-  raw_url: string;
   files: {
     [key: string]: GistFile;
   };
 }
 
-const getFilteredStarredGists = (data: StarredGistData[]) => {
+interface FilteredGistData {
+  id: string;
+  fileName: string;
+  ownerName: string;
+  ownerImageUrl: string;
+  gistName: string;
+  createdAt: string;
+  gistDescription: string;
+  updatedAt: string;
+  rawUrl: string | undefined;
+}
+
+const getFilteredStarredGists = (
+  data: StarredGistData[]
+): FilteredGistData[] => {
   return data.map((gist) => {
     const firstFileKey = Object.keys(gist.files)[0];
     const firstFile = gist.files[firstFileKey];
 
     return {
       id: gist.id,
-      fileName: firstFile,
+      fileName: firstFile.filename, // Extract filename directly
       ownerName: gist.owner.login,
       ownerImageUrl: gist.owner.avatar_url,
       gistName: firstFile.filename,
@@ -99,7 +111,7 @@ const getFilteredStarredGists = (data: StarredGistData[]) => {
 };
 
 const StarredGists = () => {
-  const [gists, setGists] = useState<StarredGistData[]>([]);
+  const [gists, setGists] = useState<FilteredGistData[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(2);
 
@@ -109,17 +121,20 @@ const StarredGists = () => {
   useEffect(() => {
     const loadStarredGists = async () => {
       try {
-        const data = await getStarredGists(user?.accessToken);
+        const data = await getStarredGists(user?.accessToken!);
         setGists(getFilteredStarredGists(data));
       } catch (error) {
         console.error("Failed to load starred gists:", error);
       }
     };
 
-    loadStarredGists();
+    if (user) {
+      loadStarredGists();
+    }
   }, [user]);
 
   const handlePageChange = (event: unknown, newPage: number) => {
+    console.log(event);
     setPage(newPage);
   };
 
@@ -131,7 +146,9 @@ const StarredGists = () => {
   };
 
   const handleYourGithubProfileClick = () => {
-    window.open(`https://github.com/`);
+    if (user) {
+      window.open(`https://github.com/`);
+    }
   };
 
   const theme = useTheme();
@@ -200,10 +217,10 @@ const StarredGists = () => {
                         id={gist.id}
                         ownerName={gist.ownerName}
                         ownerImageUrl={gist.ownerImageUrl}
-                        gistName={gist.gistName!}
-                        createdAt={gist.createdAt!}
+                        gistName={gist.gistName}
+                        createdAt={gist.createdAt}
                         gistDescription={gist.gistDescription}
-                        rawUrl={gist.rawUrl}
+                        rawUrl={gist.rawUrl!}
                       />
                     </TableCell>
                   </TableRow>
@@ -212,7 +229,7 @@ const StarredGists = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[]}
+          rowsPerPageOptions={[2, 5, 10]} // Added some options for rows per page
           component="div"
           count={gists.length}
           rowsPerPage={rowsPerPage}
