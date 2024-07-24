@@ -108,6 +108,8 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
     }
   };
 
+  console.log(publicGistData);
+
   return (
     <Paper sx={{ width: "100%" }}>
       <TableContainer>
@@ -170,8 +172,11 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                         </Box>
                       </TableCell>
                       <TableCell>{truncateText(row.gistName, 20)}</TableCell>
-                      <TableCell>{truncateText(row.gistName, 20)}</TableCell>
-                      <TableCell>{truncateText(row.gistName, 20)}</TableCell>
+                      <TableCell>{truncateText(row.createdAt, 20)}</TableCell>
+                      <TableCell>
+                        {row.gistDescription &&
+                          truncateText(row.gistDescription, 20)}
+                      </TableCell>
                       <TableCell align="right" sx={{ display: "flex" }}>
                         <IconButton
                           onClick={(e) => {

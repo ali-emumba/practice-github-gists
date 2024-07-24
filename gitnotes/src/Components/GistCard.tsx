@@ -17,6 +17,7 @@ import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { toast } from "react-toastify";
 import { forkGist, starGist } from "../Services/gistsServiceFunctions"; // Import the functions
 import { useAppSelector } from "../Store/hooks";
+import { truncateText } from "../utils/utils";
 
 interface GistCardProps {
   id: string;
@@ -129,9 +130,9 @@ export default function GistCard({
             />
             <UserDetails>
               <Typography variant="body2" component="span">
-                {ownerName} /{" "}
+                {truncateText(ownerName, 20)}/
                 <Typography variant="body2" fontWeight="bold" component="span">
-                  {gistName}
+                  {truncateText(gistName, 20)}
                 </Typography>
               </Typography>
               <GistInfo>
@@ -139,7 +140,7 @@ export default function GistCard({
                   Created at {createdAt}
                 </Typography>
                 <Typography variant="caption" component="span">
-                  {gistDescription}
+                  {gistDescription && truncateText(gistDescription, 30)}
                 </Typography>
               </GistInfo>
             </UserDetails>

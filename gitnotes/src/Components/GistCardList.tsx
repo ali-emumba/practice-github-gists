@@ -67,6 +67,11 @@ const GistCardList = ({ publicGistData }: GistsTableProps) => {
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[]}
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "end",
+          }}
         />
       )}
     </>
