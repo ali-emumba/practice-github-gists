@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Container, styled, TablePagination } from "@mui/material";
+import { Box, styled, TablePagination } from "@mui/material";
 import GistCard from "./GistCard";
 
-const FlexContainer = styled(Container)`
+const FlexContainer = styled(Box)`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
-  gap: 16px;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0;
 `;
 
 interface publicGistData {
@@ -28,7 +29,7 @@ interface GistsTableProps {
 
 const GistCardList = ({ publicGistData }: GistsTableProps) => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage] = useState(4);
+  const [rowsPerPage] = useState(6);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     console.log(event);

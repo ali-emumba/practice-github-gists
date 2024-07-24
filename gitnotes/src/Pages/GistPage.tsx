@@ -20,7 +20,7 @@ import {
   GistData,
   GistFile,
   starGist,
-} from "../Services/gistsUtilFunctions"; // Import the function and types
+} from "../Services/gistsServiceFunctions"; // Import the function and types
 import dayjs from "dayjs";
 import { useAppSelector } from "../Store/hooks";
 import { toast } from "react-toastify";

@@ -15,7 +15,7 @@ import JSONPretty from "react-json-pretty";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { toast } from "react-toastify";
-import { forkGist, starGist } from "../Services/gistsUtilFunctions"; // Import the functions
+import { forkGist, starGist } from "../Services/gistsServiceFunctions"; // Import the functions
 import { useAppSelector } from "../Store/hooks";
 
 interface GistCardProps {
@@ -192,9 +192,6 @@ const StyledCard = styled(Card)`
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  &:hover .action-buttons {
-    opacity: 1;
-  }
 `;
 
 const StyledCardContent = styled(CardContent)`

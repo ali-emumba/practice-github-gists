@@ -11,9 +11,10 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../Store/hooks";
-import { forkGist, starGist } from "../Services/gistsUtilFunctions";
+import { forkGist, starGist } from "../Services/gistsServiceFunctions";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
+import { truncateText } from "../utils/utils";
 
 interface Column {
   id: "ownerName" | "gistName" | "createdAt" | "gistDescription" | "actions";
@@ -168,9 +169,9 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                           {row.ownerName}
                         </Box>
                       </TableCell>
-                      <TableCell>{row.gistName}</TableCell>
-                      <TableCell>{row.createdAt}</TableCell>
-                      <TableCell>{row.gistDescription}</TableCell>
+                      <TableCell>{truncateText(row.gistName, 20)}</TableCell>
+                      <TableCell>{truncateText(row.gistName, 20)}</TableCell>
+                      <TableCell>{truncateText(row.gistName, 20)}</TableCell>
                       <TableCell align="right" sx={{ display: "flex" }}>
                         <IconButton
                           onClick={(e) => {

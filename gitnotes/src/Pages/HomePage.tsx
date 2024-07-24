@@ -13,16 +13,16 @@ import ListIcon from "@mui/icons-material/List";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import GistsTable from "../Components/GistsTable";
 import GistCardList from "../Components/GistCardList";
-import { getPublicGists } from "../Services/gistsUtilFunctions";
+import { getPublicGists } from "../Services/gistsServiceFunctions";
 import dayjs from "dayjs";
 
 const StyledContainer = styled(Container)`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   min-height: 93vh;
-  padding: 5vh 5vw;
-  width: 100vw;
+  min-width: 100%;
 `;
 
 const HeaderBox = styled(Box)`
@@ -36,10 +36,6 @@ const HeaderBox = styled(Box)`
 const ViewSwitchBox = styled(Box)`
   display: flex;
   align-items: center;
-`;
-
-const ContentContainer = styled(Container)`
-  width: 100%;
 `;
 
 const getFilteredResults = (data: any) => {
@@ -93,7 +89,9 @@ const HomePage = () => {
   };
 
   return (
-    <StyledContainer>
+    <StyledContainer
+      sx={{ px: { lg: "16vw", md: "8vw", sm: "4vw" }, py: "5vh" }}
+    >
       <HeaderBox>
         <Typography variant="h5">Public Gists</Typography>
         <ViewSwitchBox>
@@ -111,27 +109,25 @@ const HomePage = () => {
           </IconButton>
         </ViewSwitchBox>
       </HeaderBox>
-      <ContentContainer>
-        {loading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="50vh"
-          >
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Alert severity="error">
-            <AlertTitle>Error</AlertTitle>
-            {error}
-          </Alert>
-        ) : viewMode === "table" ? (
-          <GistsTable publicGistData={gists} />
-        ) : (
-          <GistCardList publicGistData={gists} />
-        )}
-      </ContentContainer>
+      {loading ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="50vh"
+        >
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          {error}
+        </Alert>
+      ) : viewMode === "table" ? (
+        <GistsTable publicGistData={gists} />
+      ) : (
+        <GistCardList publicGistData={gists} />
+      )}
     </StyledContainer>
   );
 };

@@ -18,7 +18,7 @@ import {
   getStarredGists,
   GistFile,
   GistOwner,
-} from "../Services/gistsUtilFunctions"; // Import the fetch function and types
+} from "../Services/gistsServiceFunctions"; // Import the fetch function and types
 import { useAppSelector } from "../Store/hooks";
 import dayjs from "dayjs";
 import GistCard from "./../Components/GistCard"; // Import the GistCard component
