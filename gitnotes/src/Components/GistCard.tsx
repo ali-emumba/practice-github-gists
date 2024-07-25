@@ -14,8 +14,13 @@ import axios from "axios";
 import JSONPretty from "react-json-pretty";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
+import DeleteIcon from "@mui/icons-material/Delete"; // Import the delete icon
 import { toast } from "react-toastify";
-import { forkGist, starGist } from "../Services/gistsServiceFunctions"; // Import the functions
+import {
+  forkGist,
+  starGist,
+  deleteGist,
+} from "../Services/gistsServiceFunctions"; // Import the delete function
 import { useAppSelector } from "../Store/hooks";
 import { truncateText } from "../utils/utils";
 
@@ -28,6 +33,8 @@ interface GistCardProps {
   gistDescription: string;
   rawUrl: string;
   fullWidth: boolean;
+  isDeletable: boolean; // Include isDeletable prop
+  onDelete: (id: string) => void; // Callback for delete
 }
 
 export default function GistCard({
@@ -39,14 +46,19 @@ export default function GistCard({
   gistDescription,
   rawUrl,
   fullWidth,
+  isDeletable, // Include isDeletable prop
+  onDelete, // Callback for delete
 }: GistCardProps) {
   const navigate = useNavigate();
   const [fileData, setFileData] = useState("");
   const [loading, setLoading] = useState(true);
   const [starLoading, setStarLoading] = useState<string | null>(null); // Track which gist is loading for starring
   const [forkLoading, setForkLoading] = useState<string | null>(null); // Track which gist is loading for forking
+  const [deleteLoading, setDeleteLoading] = useState(false); // Track the delete loading state
 
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth?.isAuthenticated
+  );
   const userAuthToken = useAppSelector((state) => state.auth.user?.accessToken);
 
   const handleCardClick = () => {
@@ -105,10 +117,32 @@ export default function GistCard({
     }
   };
 
+  // Handle the delete action
+  const handleDeleteClick = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // Prevent event propagation to the card click
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    setDeleteLoading(true);
+
+    try {
+      await deleteGist(id, userAuthToken);
+      toast.success(`Gist deleted successfully with ID: ${id}`);
+      onDelete(id); // Notify parent to remove the gist
+    } catch (error) {
+      console.error("Error deleting gist:", error);
+      toast.error("Error deleting gist. Please try again.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <StyledCard
       onClick={handleCardClick}
-      sx={fullWidth ? { width: "100%" } : null}
+      sx={fullWidth ? { width: "100%", minHeight: "auto" } : null}
     >
       {loading ? (
         <Skeleton
@@ -119,7 +153,17 @@ export default function GistCard({
         />
       ) : (
         <>
-          <StyledCardContent>
+          <StyledCardContent
+            sx={
+              fullWidth
+                ? {
+                    minHeight: "auto",
+                    maxHeight: "250px",
+                    height: "auto",
+                  }
+                : null
+            }
+          >
             <JSONPretty id="json-pretty" data={fileData} />
           </StyledCardContent>
           <CardFooter>
@@ -130,7 +174,7 @@ export default function GistCard({
             />
             <UserDetails>
               <Typography variant="body2" component="span">
-                {truncateText(ownerName, 20)}/
+                {ownerName && truncateText(ownerName, 20)}/
                 <Typography variant="body2" fontWeight="bold" component="span">
                   {truncateText(gistName, 20)}
                 </Typography>
@@ -173,6 +217,19 @@ export default function GistCard({
                   <StarBorderIcon />
                 )}
               </IconButton>
+              {isDeletable && (
+                <IconButton
+                  onClick={(e) => handleDeleteClick(e, id)}
+                  disabled={!isAuthenticated || deleteLoading}
+                  aria-label="delete"
+                >
+                  {deleteLoading ? (
+                    <Skeleton variant="circular" width={24} height={24} />
+                  ) : (
+                    <DeleteIcon />
+                  )}
+                </IconButton>
+              )}
             </ActionButtons>
           </CardFooter>
         </>
@@ -184,7 +241,7 @@ export default function GistCard({
 const StyledCard = styled(Card)`
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 16px;
+  padding: 8px;
   width: 380px;
   min-height: 300px;
   background-color: #fff;
