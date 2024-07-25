@@ -11,10 +11,11 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import JSONPretty from "react-json-pretty";
 import {
+  deleteGist,
   fetchGist,
   forkGist,
   GistData,
@@ -26,6 +27,7 @@ import { useAppSelector } from "../Store/hooks";
 import { toast } from "react-toastify";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
+import DeleteIcon from "@mui/icons-material/Delete"; // Import the delete icon
 
 const UserDetails = styled(Box)`
   display: flex;
@@ -194,9 +196,14 @@ const ContentContainer = ({
 }: ContentContainerProps) => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const userAuthToken = useAppSelector((state) => state.auth.user?.accessToken);
+  const currentUser = useAppSelector((state) => state.auth.user); // Assuming current user is stored here
 
-  const [starLoading, setStarLoading] = useState<string | null>(null); // Track which gist is loading for starring
-  const [forkLoading, setForkLoading] = useState<string | null>(null); // Track which gist is loading for forking
+  const [starLoading, setStarLoading] = useState<string | null>(null);
+  const [forkLoading, setForkLoading] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false); // Track the delete loading state
+
+  // Check if the current user is the owner of the gist
+  const isOwner = currentUser?.photoURL === singleGistData.owner.avatar_url;
 
   const handleStarClick = async (id: string) => {
     if (!isAuthenticated || !userAuthToken) {
@@ -236,6 +243,29 @@ const ContentContainer = ({
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleDeleteClick = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // Prevent event propagation to the card click
+    if (!isAuthenticated || !userAuthToken) {
+      console.error("User is not authenticated or no auth token available.");
+      return;
+    }
+
+    setDeleteLoading(true);
+
+    try {
+      await deleteGist(id, userAuthToken);
+      toast.success(`Gist deleted successfully with ID: ${id}`);
+      navigate("/userGists");
+    } catch (error) {
+      console.error("Error deleting gist:", error);
+      toast.error("Error deleting gist. Please try again.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -258,7 +288,6 @@ const ContentContainer = ({
             alt="User"
             sx={{ width: 60, height: 60 }}
           />
-
           <UserDetails>
             <Typography
               variant="body1"
@@ -308,6 +337,20 @@ const ContentContainer = ({
               <ForkRightIcon />
             )}
           </IconButton>
+          {/* Conditionally render the Edit button based on ownership */}
+          {isOwner && (
+            <IconButton
+              onClick={(e) => handleDeleteClick(e, id!)}
+              disabled={!isAuthenticated || deleteLoading}
+              aria-label="delete"
+            >
+              {deleteLoading ? (
+                <Skeleton variant="circular" width={24} height={24} />
+              ) : (
+                <DeleteIcon />
+              )}
+            </IconButton>
+          )}
         </Box>
       </Box>
 
@@ -329,4 +372,5 @@ const ContentContainer = ({
     </Box>
   );
 };
+
 export default GistPage;
