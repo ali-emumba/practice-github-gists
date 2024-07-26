@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -13,11 +13,7 @@ import * as Yup from "yup";
 import AddGistData from "../Components/AddGistData";
 import { useAppSelector } from "../Store/hooks";
 import { toast } from "react-toastify";
-import {
-  fetchGist,
-  updateGist,
-  GistData,
-} from "../Services/gistsServiceFunctions";
+import { fetchGist, updateGist } from "../Services/gistsServiceFunctions";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Define types for form data

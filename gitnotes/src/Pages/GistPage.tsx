@@ -58,12 +58,13 @@ const GistPage = () => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const userToken = useAppSelector((state) => state.auth.user?.accessToken);
 
   // Fetch gist data and update state
   useEffect(() => {
     const loadGistData = async (gistId: string) => {
       try {
-        const data = await fetchGist(gistId);
+        const data = await fetchGist(gistId, userToken);
         setSingleGistData(data);
 
         // Extract the first file's data
