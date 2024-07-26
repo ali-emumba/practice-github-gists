@@ -18,7 +18,6 @@ import {
   getUserGists,
   GistFile,
   GistOwner,
-  UserGistData,
 } from "../Services/gistsServiceFunctions"; // Import the fetch function and types
 import { useAppSelector } from "../Store/hooks";
 import dayjs from "dayjs";
@@ -80,6 +79,18 @@ interface UserGistDataResults {
   };
 }
 
+interface FilteredGistData {
+  id: string | undefined;
+  fileName: GistFile;
+  ownerName: string | undefined;
+  ownerImageUrl: string | undefined;
+  gistName: string | undefined;
+  createdAt: string | undefined;
+  gistDescription: string | undefined;
+  updatedAt: string | undefined;
+  rawUrl: string | undefined;
+}
+
 const getFilteredResults = (data: UserGistDataResults[]) => {
   return data.map((gist) => {
     const firstFileKey = Object.keys(gist.files)[0];
@@ -100,7 +111,7 @@ const getFilteredResults = (data: UserGistDataResults[]) => {
 };
 
 const UserGists = () => {
-  const [gists, setGists] = useState<UserGistData[]>([]);
+  const [gists, setGists] = useState<FilteredGistData[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(2);
 
@@ -206,13 +217,13 @@ const UserGists = () => {
                       {/* Render GistCard for each gist */}
                       <GistCard
                         fullWidth={true}
-                        id={gist.id}
+                        id={gist.id!}
                         ownerName={user?.displayName!}
                         ownerImageUrl={user?.photoURL!}
                         gistName={gist.gistName!}
                         createdAt={gist.createdAt!}
-                        gistDescription={gist.gistDescription}
-                        rawUrl={gist.rawUrl}
+                        gistDescription={gist.gistDescription!}
+                        rawUrl={gist.rawUrl!}
                         isDeletable={true}
                         onDelete={handleDeleteGist}
                         isEditable
