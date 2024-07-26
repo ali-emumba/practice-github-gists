@@ -154,9 +154,14 @@ export const getUserGists = async (token: string | undefined) => {
 };
 
 // Fetch a single gist by ID
-export const fetchGist = async (id: string): Promise<GistData> => {
+export const fetchGist = async (
+  id: string,
+  token: string | undefined
+): Promise<GistData> => {
   try {
-    const response = await axios.get(`${GITHUB_API_BASE_URL}/gists/${id}`);
+    const response = await axios.get(`${GITHUB_API_BASE_URL}/gists/${id}`, {
+      headers: token ? createAuthHeaders(token || "") : GITHUB_HEADERS,
+    });
     return response.data as GistData;
   } catch (error) {
     console.error("Failed to fetch gist data:", error);

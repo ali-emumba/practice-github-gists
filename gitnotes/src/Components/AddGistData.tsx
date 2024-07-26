@@ -46,7 +46,7 @@ interface AddGistDataProps {
 // Define form data interface
 interface GistFormData {
   description: string;
-  data: { filename: string; content: string }[];
+  data?: { filename: string; content: string }[];
 }
 
 const AddGistData: React.FC<AddGistDataProps> = ({

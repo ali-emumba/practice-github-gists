@@ -34,9 +34,9 @@ interface GistCardProps {
   gistDescription: string;
   rawUrl: string;
   fullWidth: boolean;
-  isDeletable: boolean; // Include isDeletable prop
+  isDeletable?: boolean; // Include isDeletable prop
   isEditable?: boolean; // Include isEditable prop
-  onDelete: (id: string) => void; // Callback for delete
+  onDelete?: (id: string) => void; // Callback for delete
 }
 
 export default function GistCard({
@@ -132,7 +132,7 @@ export default function GistCard({
     try {
       await deleteGist(id, userAuthToken);
       toast.success(`Gist deleted successfully with ID: ${id}`);
-      onDelete(id);
+      onDelete!(id);
     } catch (error) {
       console.error("Error deleting gist:", error);
       toast.error("Error deleting gist. Please try again.");

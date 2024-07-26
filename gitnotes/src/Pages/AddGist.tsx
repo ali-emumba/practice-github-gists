@@ -18,7 +18,7 @@ import { createGist } from "../Services/gistsServiceFunctions"; // Adjust the pa
 // Define types for form data
 interface GistFormData {
   description: string;
-  data: { filename: string; content: string }[];
+  data?: { filename: string; content: string }[];
 }
 
 // Validation schema using Yup
@@ -67,7 +67,7 @@ const AddGist: React.FC = () => {
   const onSubmit = async (data: GistFormData) => {
     setLoading(true);
 
-    const files = data.data.reduce(
+    const files = data.data!.reduce(
       (acc: Record<string, { content: string }>, file) => {
         acc[file.filename] = { content: file.content };
         return acc;

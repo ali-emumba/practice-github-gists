@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -13,17 +13,13 @@ import * as Yup from "yup";
 import AddGistData from "../Components/AddGistData";
 import { useAppSelector } from "../Store/hooks";
 import { toast } from "react-toastify";
-import {
-  fetchGist,
-  updateGist,
-  GistData,
-} from "../Services/gistsServiceFunctions";
+import { fetchGist, updateGist } from "../Services/gistsServiceFunctions";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Define types for form data
 interface GistFormData {
   description: string;
-  data: { filename: string; content: string }[];
+  data?: { filename: string; content: string }[];
 }
 
 // Validation schema using Yup
@@ -82,7 +78,7 @@ const EditGist = () => {
     setLoading(true);
 
     // Construct the files object for the update request
-    const files = data.data.reduce(
+    const files = data.data!.reduce(
       (acc: Record<string, { content: string }>, file, index) => {
         const originalFilename = originalFileNames[index];
 
@@ -121,7 +117,7 @@ const EditGist = () => {
   useEffect(() => {
     const loadGistData = async (gistId: string) => {
       try {
-        const data = await fetchGist(gistId);
+        const data = await fetchGist(gistId, userToken);
 
         // Extract all files' data and update the form fields
         const filesData = Object.keys(data.files).map((key, index) => {
