@@ -14,12 +14,11 @@ import AddGistData from "../Components/AddGistData";
 import { useAppSelector } from "../Store/hooks";
 import { toast } from "react-toastify";
 import {
-  updateGist, // Import the updateGist function
   fetchGist,
+  updateGist,
   GistData,
-  GistFile,
-} from "../Services/gistsServiceFunctions"; // Adjust the path based on your project structure
-import { useParams } from "react-router-dom";
+} from "../Services/gistsServiceFunctions";
+import { useNavigate, useParams } from "react-router-dom";
 
 // Define types for form data
 interface GistFormData {
@@ -49,10 +48,13 @@ const validationSchema = Yup.object().shape({
 
 const EditGist = () => {
   const [loading, setLoading] = useState(false);
-  const [singleGistData, setSingleGistData] = useState<GistData | null>(null);
+  const [deletedFiles, setDeletedFiles] = useState<string[]>([]); // Track deleted files
+  const [originalFileNames, setOriginalFileNames] = useState<
+    Record<number, string>
+  >({}); // Track original filenames
 
   const params = useParams();
-  const { id } = params; // Get gist ID from URL parameters
+  const { id } = params;
 
   const {
     control,
@@ -74,19 +76,31 @@ const EditGist = () => {
   });
 
   const userToken = useAppSelector((state) => state.auth.user?.accessToken);
+  const navigate = useNavigate();
 
   const onSubmit = async (data: GistFormData) => {
     setLoading(true);
 
+    // Construct the files object for the update request
     const files = data.data.reduce(
-      (acc: Record<string, { content: string }>, file) => {
+      (acc: Record<string, { content: string }>, file, index) => {
+        const originalFilename = originalFileNames[index];
+
+        // If the filename has changed, we need to delete the original file
+        if (originalFilename && originalFilename !== file.filename) {
+          acc[originalFilename] = { content: "" };
+        }
+
         acc[file.filename] = { content: file.content };
         return acc;
       },
       {}
     );
 
-    console.log(files);
+    // Include deleted files with empty content
+    deletedFiles.forEach((filename) => {
+      files[filename] = { content: "" };
+    });
 
     const gistData = {
       description: data.description,
@@ -94,12 +108,9 @@ const EditGist = () => {
     };
 
     try {
-      if (id) {
-        await updateGist(id, gistData, userToken); // Use updateGist function
-        toast.success("Gist updated successfully!");
-      } else {
-        toast.error("No gist ID provided for update.");
-      }
+      await updateGist(id!, gistData, userToken);
+      toast.success("Gist updated successfully!");
+      navigate("/userGists");
     } catch (error: any) {
       toast.error(`Error updating gist: ${error.message}`);
     } finally {
@@ -111,13 +122,17 @@ const EditGist = () => {
     const loadGistData = async (gistId: string) => {
       try {
         const data = await fetchGist(gistId);
-        setSingleGistData(data);
 
         // Extract all files' data and update the form fields
-        const filesData = Object.keys(data.files).map((key) => ({
-          filename: key,
-          content: data.files[key].content,
-        }));
+        const filesData = Object.keys(data.files).map((key, index) => {
+          // Track the original filenames
+          setOriginalFileNames((prev) => ({ ...prev, [index]: key }));
+
+          return {
+            filename: key,
+            content: data.files[key].content,
+          };
+        });
 
         // Update form fields with fetched data
         setValue("description", data.description);
@@ -134,6 +149,12 @@ const EditGist = () => {
       loadGistData(id);
     }
   }, [id, reset, setValue]);
+
+  // Function to handle file deletion
+  const handleFileDelete = (index: number, filename: string) => {
+    remove(index); // Remove file from the form
+    setDeletedFiles((prev) => [...prev, filename]); // Add file to deleted files list
+  };
 
   return (
     <Box
@@ -181,7 +202,7 @@ const EditGist = () => {
             index={index}
             control={control}
             errors={errors}
-            removeFile={remove}
+            removeFile={() => handleFileDelete(index, file.filename)} // Update delete handler
             isDeletable={fields.length > 1}
           />
         ))}

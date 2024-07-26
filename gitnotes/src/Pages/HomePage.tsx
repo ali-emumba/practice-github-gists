@@ -15,6 +15,7 @@ import GistsTable from "../Components/GistsTable";
 import GistCardList from "../Components/GistCardList";
 import { getPublicGists } from "../Services/gistsServiceFunctions";
 import dayjs from "dayjs";
+import { useAppSelector } from "../Store/hooks";
 
 const StyledContainer = styled(Container)`
   display: flex;
@@ -63,12 +64,14 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const accessToken = useAppSelector((state) => state.auth.user?.accessToken);
+
   useEffect(() => {
     const fetchGists = async () => {
       setLoading(true);
       setError("");
       try {
-        const data = await getPublicGists();
+        const data = await getPublicGists(accessToken);
         setGists(getFilteredResults(data));
       } catch (error: any) {
         setError("Error fetching gists: " + error.message);

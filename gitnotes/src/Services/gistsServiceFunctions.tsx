@@ -17,7 +17,7 @@ interface CreateGistFile {
 interface UpdateGistFile {
   [filename: string]: {
     content?: string; // optional, as file content may not always need updating
-    filename?: string; // optional, if renaming the file
+    // filename?: string; // optional, if renaming the file
   };
 }
 
@@ -126,10 +126,10 @@ export const deleteGist = async (gistId: string, token: string | undefined) => {
 };
 
 // Fetch public gists
-export const getPublicGists = async () => {
+export const getPublicGists = async (token?: string | undefined) => {
   try {
     const response = await axios.get(`${GITHUB_API_BASE_URL}/gists/public`, {
-      headers: GITHUB_HEADERS,
+      headers: token ? createAuthHeaders(token || "") : GITHUB_HEADERS,
     });
     return response.data;
   } catch (error: any) {
