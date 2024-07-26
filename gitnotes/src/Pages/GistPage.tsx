@@ -280,11 +280,20 @@ const ContentContainer = ({
         sx={{
           height: "15%",
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
           marginBottom: "16px",
+          gap: "10px", // Add a gap between items
         }}
       >
-        <Box sx={{ display: "flex", gap: "10px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "10px",
+            alignItems: "center",
+            overflow: "hidden",
+          }}
+        >
           <Avatar
             src={singleGistData.owner.avatar_url}
             alt="User"
@@ -294,7 +303,12 @@ const ContentContainer = ({
             <Typography
               variant="body1"
               component="span"
-              sx={{ color: "#003B44", fontWeight: "bold", display: "flex" }}
+              sx={{
+                color: "#003B44",
+                fontWeight: "bold",
+                display: "flex",
+                flexWrap: "wrap",
+              }}
             >
               <Typography sx={{ fontWeight: "400" }}>
                 {singleGistData.owner.login}
@@ -310,7 +324,13 @@ const ContentContainer = ({
             </Typography>
           </UserDetails>
         </Box>
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "flex-end", sm: "center" },
+            gap: "10px",
+          }}
+        >
           <IconButton
             onClick={(e) => {
               e.stopPropagation();
