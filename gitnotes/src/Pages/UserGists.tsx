@@ -143,6 +143,8 @@ const UserGists = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  console.log(gists);
+
   return (
     <Box
       sx={{
@@ -211,7 +213,8 @@ const UserGists = () => {
                         gistDescription={gist.gistDescription}
                         rawUrl={gist.rawUrl}
                         isDeletable={true}
-                        onDelete={handleDeleteGist} // Pass the delete handler to GistCard
+                        onDelete={handleDeleteGist}
+                        isEditable
                       />
                     </TableCell>
                   </TableRow>

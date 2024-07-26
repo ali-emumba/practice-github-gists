@@ -97,6 +97,7 @@ export const updateGist = async (
   gistData: UpdateGistData,
   token: string | undefined
 ) => {
+  console.log(gistData);
   try {
     const response = await axios.patch(
       `${GITHUB_API_BASE_URL}/gists/${gistId}`,
@@ -105,6 +106,7 @@ export const updateGist = async (
         headers: createAuthHeaders(token || ""),
       }
     );
+    console.log(response.data);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Error updating gist");

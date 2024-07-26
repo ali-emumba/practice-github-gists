@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
 import DeleteIcon from "@mui/icons-material/Delete"; // Import the delete icon
+import EditIcon from "@mui/icons-material/Edit"; // Import the edit icon
 
 const UserDetails = styled(Box)`
   display: flex;
@@ -338,6 +339,15 @@ const ContentContainer = ({
             )}
           </IconButton>
           {/* Conditionally render the Edit button based on ownership */}
+          {isOwner && (
+            <IconButton
+              component={Link}
+              to={`/editGist/${id}`} // Make sure this route exists
+              aria-label="edit"
+            >
+              <EditIcon />
+            </IconButton>
+          )}
           {isOwner && (
             <IconButton
               onClick={(e) => handleDeleteClick(e, id!)}

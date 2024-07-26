@@ -13,6 +13,7 @@ import ProtectedRoute from "./ProtectedRoutes";
 import AddGist from "./Pages/AddGist";
 import UserGists from "./Pages/UserGists";
 import StarredGists from "./Pages/StarredGists";
+import EditGist from "./Pages/EditGist";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -43,16 +44,16 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/gist/:id" element={<GistPage />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/addGist" element={<AddGist />} />{" "}
-            {/* Protected route */}
+            <Route path="/addGist" element={<AddGist />} />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route path="/userGists" element={<UserGists />} />{" "}
-            {/* Protected route */}
+            <Route path="/userGists" element={<UserGists />} />
           </Route>
           <Route element={<ProtectedRoute />}>
-            <Route path="/starredGists" element={<StarredGists />} />{" "}
-            {/* Protected route */}
+            <Route path="/starredGists" element={<StarredGists />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/editGist/:id" element={<EditGist />} />
           </Route>
         </Routes>
       </BrowserRouter>

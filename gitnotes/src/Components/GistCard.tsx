@@ -14,13 +14,14 @@ import axios from "axios";
 import JSONPretty from "react-json-pretty";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ForkRightIcon from "@mui/icons-material/ForkRight";
-import DeleteIcon from "@mui/icons-material/Delete"; // Import the delete icon
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit"; // Import the edit icon
 import { toast } from "react-toastify";
 import {
   forkGist,
   starGist,
   deleteGist,
-} from "../Services/gistsServiceFunctions"; // Import the delete function
+} from "../Services/gistsServiceFunctions";
 import { useAppSelector } from "../Store/hooks";
 import { truncateText } from "../utils/utils";
 
@@ -34,6 +35,7 @@ interface GistCardProps {
   rawUrl: string;
   fullWidth: boolean;
   isDeletable: boolean; // Include isDeletable prop
+  isEditable?: boolean; // Include isEditable prop
   onDelete: (id: string) => void; // Callback for delete
 }
 
@@ -46,15 +48,16 @@ export default function GistCard({
   gistDescription,
   rawUrl,
   fullWidth,
-  isDeletable, // Include isDeletable prop
-  onDelete, // Callback for delete
+  isDeletable,
+  isEditable = false, // Default value for isEditable
+  onDelete,
 }: GistCardProps) {
   const navigate = useNavigate();
   const [fileData, setFileData] = useState("");
   const [loading, setLoading] = useState(true);
-  const [starLoading, setStarLoading] = useState<string | null>(null); // Track which gist is loading for starring
-  const [forkLoading, setForkLoading] = useState<string | null>(null); // Track which gist is loading for forking
-  const [deleteLoading, setDeleteLoading] = useState(false); // Track the delete loading state
+  const [starLoading, setStarLoading] = useState<string | null>(null);
+  const [forkLoading, setForkLoading] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const isAuthenticated = useAppSelector(
     (state) => state.auth?.isAuthenticated
@@ -117,9 +120,8 @@ export default function GistCard({
     }
   };
 
-  // Handle the delete action
   const handleDeleteClick = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation(); // Prevent event propagation to the card click
+    e.stopPropagation();
     if (!isAuthenticated || !userAuthToken) {
       console.error("User is not authenticated or no auth token available.");
       return;
@@ -130,13 +132,18 @@ export default function GistCard({
     try {
       await deleteGist(id, userAuthToken);
       toast.success(`Gist deleted successfully with ID: ${id}`);
-      onDelete(id); // Notify parent to remove the gist
+      onDelete(id);
     } catch (error) {
       console.error("Error deleting gist:", error);
       toast.error("Error deleting gist. Please try again.");
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  const handleEditClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // Prevent navigation on card click
+    navigate(`/editGist/${id}`); // Navigate to the edit page
   };
 
   return (
@@ -217,6 +224,15 @@ export default function GistCard({
                   <StarBorderIcon />
                 )}
               </IconButton>
+              {isEditable && (
+                <IconButton
+                  onClick={(e) => handleEditClick(e, id)}
+                  disabled={!isAuthenticated}
+                  aria-label="edit"
+                >
+                  <EditIcon />
+                </IconButton>
+              )}
               {isDeletable && (
                 <IconButton
                   onClick={(e) => handleDeleteClick(e, id)}
