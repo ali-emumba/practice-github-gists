@@ -135,8 +135,15 @@ const UserGists = () => {
     window.open(`https://github.com/`);
   };
 
+  const handleDeleteGist = (id: string) => {
+    // Update the gists state by filtering out the deleted gist
+    setGists((prevGists) => prevGists.filter((gist) => gist.id !== id));
+  };
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  console.log(gists);
 
   return (
     <Box
@@ -205,6 +212,9 @@ const UserGists = () => {
                         createdAt={gist.createdAt!}
                         gistDescription={gist.gistDescription}
                         rawUrl={gist.rawUrl}
+                        isDeletable={true}
+                        onDelete={handleDeleteGist}
+                        isEditable
                       />
                     </TableCell>
                   </TableRow>

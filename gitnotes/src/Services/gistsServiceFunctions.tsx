@@ -14,10 +14,22 @@ interface CreateGistFile {
   };
 }
 
+interface UpdateGistFile {
+  [filename: string]: {
+    content?: string; // optional, as file content may not always need updating
+    // filename?: string; // optional, if renaming the file
+  };
+}
+
 interface CreateGistData {
   description: string;
   public: boolean;
   files: CreateGistFile;
+}
+
+interface UpdateGistData {
+  description?: string; // optional, if the description does not change
+  files: UpdateGistFile;
 }
 
 export interface GistOwner {
@@ -59,6 +71,8 @@ const createAuthHeaders = (token: string) => ({
 });
 
 // API Functions
+
+// Create a new gist
 export const createGist = async (
   gistData: CreateGistData,
   token: string | undefined
@@ -77,10 +91,45 @@ export const createGist = async (
   }
 };
 
-export const getPublicGists = async () => {
+// Update an existing gist
+export const updateGist = async (
+  gistId: string,
+  gistData: UpdateGistData,
+  token: string | undefined
+) => {
+  console.log(gistData);
+  try {
+    const response = await axios.patch(
+      `${GITHUB_API_BASE_URL}/gists/${gistId}`,
+      gistData,
+      {
+        headers: createAuthHeaders(token || ""),
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Error updating gist");
+  }
+};
+
+// Delete an existing gist
+export const deleteGist = async (gistId: string, token: string | undefined) => {
+  try {
+    await axios.delete(`${GITHUB_API_BASE_URL}/gists/${gistId}`, {
+      headers: createAuthHeaders(token || ""),
+    });
+    return { message: "Gist deleted successfully" };
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Error deleting gist");
+  }
+};
+
+// Fetch public gists
+export const getPublicGists = async (token?: string | undefined) => {
   try {
     const response = await axios.get(`${GITHUB_API_BASE_URL}/gists/public`, {
-      headers: GITHUB_HEADERS,
+      headers: token ? createAuthHeaders(token || "") : GITHUB_HEADERS,
     });
     return response.data;
   } catch (error: any) {
@@ -90,6 +139,7 @@ export const getPublicGists = async () => {
   }
 };
 
+// Fetch user gists
 export const getUserGists = async (token: string | undefined) => {
   try {
     const response = await axios.get(`${GITHUB_API_BASE_URL}/gists`, {
@@ -103,6 +153,7 @@ export const getUserGists = async (token: string | undefined) => {
   }
 };
 
+// Fetch a single gist by ID
 export const fetchGist = async (id: string): Promise<GistData> => {
   try {
     const response = await axios.get(`${GITHUB_API_BASE_URL}/gists/${id}`);
@@ -113,6 +164,7 @@ export const fetchGist = async (id: string): Promise<GistData> => {
   }
 };
 
+// Fork a gist
 export const forkGist = async (gistId: string, token: string) => {
   try {
     const response = await axios.post(
@@ -129,6 +181,7 @@ export const forkGist = async (gistId: string, token: string) => {
   }
 };
 
+// Star a gist
 export const starGist = async (gistId: string, token: string) => {
   try {
     const response = await axios.put(
@@ -145,6 +198,7 @@ export const starGist = async (gistId: string, token: string) => {
   }
 };
 
+// Fetch starred gists
 export const getStarredGists = async (accessToken: string) => {
   try {
     const response = await axios.get(`${GITHUB_API_BASE_URL}/gists/starred`, {
