@@ -53,7 +53,7 @@ const GistPage = () => {
   const { id } = useParams();
 
   const [singleGistData, setSingleGistData] = useState<GistData | null>(null);
-  const [extractedFileData, setExtractedFileData] = useState<GistFile | null>(
+  const [extractedFileData, setExtractedFileData] = useState<GistFile[] | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(true);
@@ -67,12 +67,9 @@ const GistPage = () => {
         const data = await fetchGist(gistId, userToken);
         setSingleGistData(data);
 
-        // Extract the first file's data
-        const fileData = Object.keys(data.files).map((key) => [
-          key,
-          data.files[key],
-        ])[0][1];
-        setExtractedFileData(fileData as GistFile);
+        // Extract all file data
+        const fileData = Object.keys(data.files).map((key) => data.files[key]);
+        setExtractedFileData(fileData as GistFile[]);
 
         setIsLoading(false);
       } catch (error) {
@@ -84,7 +81,7 @@ const GistPage = () => {
     if (id) {
       loadGistData(id);
     }
-  }, [id]);
+  }, [id, userToken]);
 
   return (
     <Container
@@ -187,7 +184,7 @@ const ErrorContainer = () => (
 // Define the props for ContentContainer
 interface ContentContainerProps {
   singleGistData: GistData;
-  extractedFileData: GistFile | null;
+  extractedFileData: GistFile[] | null;
   id: string | undefined;
 }
 
@@ -314,7 +311,7 @@ const ContentContainer = ({
                 {singleGistData.owner.login}
               </Typography>
               {" / "}
-              {extractedFileData && extractedFileData.filename}
+              {extractedFileData && extractedFileData[0].filename}
             </Typography>
             <Typography variant="caption" component="span">
               Created at {dayjs(singleGistData.created_at).format("DD-MM-YYYY")}
@@ -385,21 +382,21 @@ const ContentContainer = ({
         </Box>
       </Box>
 
-      <Card variant="outlined">
-        <CardHeader
-          title={extractedFileData && extractedFileData.filename}
-          titleTypographyProps={{ variant: "h6" }}
-          sx={{
-            borderBottom: "1px solid lightGray",
-          }}
-        />
-        <CardContent>
-          <JSONPretty
-            id="json-pretty"
-            data={extractedFileData && extractedFileData.content}
-          />
-        </CardContent>
-      </Card>
+      {extractedFileData &&
+        extractedFileData.map((file, index) => (
+          <Card variant="outlined" key={index} sx={{ marginTop: "16px" }}>
+            <CardHeader
+              title={file.filename}
+              titleTypographyProps={{ variant: "h6" }}
+              sx={{
+                borderBottom: "1px solid lightGray",
+              }}
+            />
+            <CardContent>
+              <JSONPretty id={`json-pretty-${index}`} data={file.content} />
+            </CardContent>
+          </Card>
+        ))}
     </Box>
   );
 };
