@@ -156,6 +156,7 @@ export default function GistsTable({ publicGistData }: GistsTableProps) {
                   .map((row) => (
                     <TableRow
                       hover
+                      sx={{ cursor: "pointer" }}
                       role="checkbox"
                       tabIndex={-1}
                       key={row.id}

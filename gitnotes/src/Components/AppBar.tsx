@@ -274,6 +274,7 @@ const Navbar = () => {
                   flexDirection: "column",
                   alignItems: "start",
                   gap: "8px",
+                  cursor: "default",
                 }}
                 onClick={handleMenuClose}
               >
