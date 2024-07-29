@@ -184,6 +184,9 @@ const StarredGists = () => {
                 color: "white",
                 mt: 2,
                 padding: "8px 32px",
+                "&:hover": {
+                  backgroundColor: "#003B44",
+                },
               }}
             >
               View on GitHub
